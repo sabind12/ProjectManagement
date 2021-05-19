@@ -1,0 +1,36 @@
+package com.sabin.projectmanagement;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+
+public class MainActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        Fragment taskFragment = new TaskFragment();
+        Fragment taskFragment2 = new TaskFragment2();
+
+        getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).replace(R.id.flFragmentTask, taskFragment, null).commit();
+
+        findViewById(R.id.btnFragment1).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getSupportFragmentManager().beginTransaction().replace(R.id.flFragmentTask, taskFragment).commit();
+            }
+        });
+
+        findViewById(R.id.btnFragment2).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getSupportFragmentManager().beginTransaction().replace(R.id.flFragmentTask, taskFragment2).commit();
+            }
+        });
+    }
+}
