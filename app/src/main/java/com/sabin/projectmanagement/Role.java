@@ -1,6 +1,7 @@
 package com.sabin.projectmanagement;
 
 public class Role {
+    int id;
     String name;
     Boolean project_read;
     Boolean project_edit;
@@ -14,6 +15,20 @@ public class Role {
 
     public Role() { }
 
+    public Role(int id, String name, Boolean project_read, Boolean project_edit, Boolean project_delete, Boolean list_read, Boolean list_edit, Boolean list_delete, Boolean task_read, Boolean task_edit, Boolean task_delete) {
+        this.id = id;
+        this.name = name;
+        this.project_read = project_read;
+        this.project_edit = project_edit;
+        this.project_delete = project_delete;
+        this.list_read = list_read;
+        this.list_edit = list_edit;
+        this.list_delete = list_delete;
+        this.task_read = task_read;
+        this.task_edit = task_edit;
+        this.task_delete = task_delete;
+    }
+
     public Role(String name, Boolean project_read, Boolean project_edit, Boolean project_delete, Boolean list_read, Boolean list_edit, Boolean list_delete, Boolean task_read, Boolean task_edit, Boolean task_delete) {
         this.name = name;
         this.project_read = project_read;
@@ -25,6 +40,14 @@ public class Role {
         this.task_read = task_read;
         this.task_edit = task_edit;
         this.task_delete = task_delete;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {

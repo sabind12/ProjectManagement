@@ -5,23 +5,23 @@ public class User {
     String name;
     String email;
     String password;
-    int role_id;
+    String role_name;
 
     public User() {    }
 
-    public User(int id, String name, String email, String password, int role_id) {
+    public User(int id, String name, String email, String password, String role_name) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
-        this.role_id = role_id;
+        this.role_name = role_name;
     }
 
-    public User(String name, String email, String password, int role_id) {
+    public User(String name, String email, String password, String role_name) {
         this.name = name;
         this.email = email;
         this.password = password;
-        this.role_id = role_id;
+        this.role_name = role_name;
     }
 
     public int getId() {
@@ -56,11 +56,11 @@ public class User {
         this.password = password;
     }
 
-    public int getRole_id() {
-        return role_id;
+    public String getRole_name() {
+        return role_name;
     }
 
-    public void setRole_id(int role_id) {
-        this.role_id = role_id;
+    public void setRole_name(String role_name) {
+        this.role_name = role_name;
     }
 }

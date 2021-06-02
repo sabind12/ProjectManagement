@@ -1,6 +1,6 @@
 package com.sabin.projectmanagement;
 
-public class List {
+public class TaskList<R> {
 
     int id;
     String name;
@@ -8,9 +8,9 @@ public class List {
     String icon;
     int project_id;
 
-    public List() {    }
+    public TaskList() {    }
 
-    public List(int id, String name, String description, String icon, int project_id) {
+    public TaskList(int id, String name, String description, String icon, int project_id) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -18,7 +18,7 @@ public class List {
         this.project_id = project_id;
     }
 
-    public List(String name, String description, String icon, int project_id) {
+    public TaskList(String name, String description, String icon, int project_id) {
         this.name = name;
         this.description = description;
         this.icon = icon;
