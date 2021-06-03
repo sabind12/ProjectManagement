@@ -42,6 +42,20 @@ public class Role {
         this.task_delete = task_delete;
     }
 
+    @Override
+    public String toString() {
+        return id + " " + name +
+                ", " + (project_read ? 1 : 0) +
+                ", " + (project_edit ? 1 : 0) +
+                ", " + (project_delete ? 1 : 0) +
+                ", " + (list_read ? 1 : 0) +
+                ", " + (list_edit ? 1 : 0) +
+                ", " + (list_delete ? 1 : 0) +
+                ", " + (task_read ? 1 : 0) +
+                ", " + (task_edit ? 1 : 0) +
+                ", " + (task_delete ? 1 : 0) + "\r\n";
+    }
+
     public int getId() {
         return id;
     }

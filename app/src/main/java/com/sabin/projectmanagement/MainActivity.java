@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.List;
@@ -29,17 +30,24 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        Role admin = new Role("admin", true, true, true, true, true, true, true, true, true);
+
         findViewById(R.id.btnFragment2).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 getSupportFragmentManager().beginTransaction().replace(R.id.flFragmentTask, taskFragment2).commit();
                 SQLiteDatabaseHelper dbHelperRead = new SQLiteDatabaseHelper(MainActivity.this);
-                List<Role> allRoleList = dbHelperRead.getAllRoles();
-                Toast.makeText(MainActivity.this, allRoleList.toString(), Toast.LENGTH_LONG).show();
+                //List<Role> allRoleList = dbHelperRead.getAllRoles();
+                //Role returnRole = dbHelperRead.getRole("admin");
+                //Toast.makeText(MainActivity.this, allRoleList.toString(), Toast.LENGTH_LONG).show();
+                //Toast.makeText(MainActivity.this, returnRole.toString(), Toast.LENGTH_LONG).show();
+                Toast.makeText(MainActivity.this, String.valueOf(dbHelperRead.editRole(admin)), Toast.LENGTH_LONG).show();
+                //Toast.makeText(MainActivity.this, String.valueOf(dbHelperRead.checkIsRole("admin")), Toast.LENGTH_LONG).show();
+
             }
         });
 
-            Role admin = new Role("admin", true, true, true, true, true, true, true, true, true);
+
 
             SQLiteDatabaseHelper dbHelper = new SQLiteDatabaseHelper(MainActivity.this);
         boolean role = dbHelper.createRole(admin);

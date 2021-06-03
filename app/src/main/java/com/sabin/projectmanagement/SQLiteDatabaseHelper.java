@@ -5,14 +5,17 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
+import android.widget.Toast;
+
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
-    //Nume baza de date
-    public static final String DB_NAME = "project.db";
+    public static final String LOG = "DBHelper"; //Tag pentru inregistrare loguri
+    public static final String DB_NAME = "project.db"; //Nume baza de date
     //Definire variabile nume tabel roluri utilizatori si nume coloane tabel roluri/drepturi utilizatori
     public static final String TABLE_ROLE = "role";
         public static final String COLUMN_ROLE_ID = "role_id";
@@ -38,6 +41,10 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
         public static final String COLUMN_PROJECT_ID = "project_id";
         public static final String COLUMN_PROJECT_NAME = "project_name";
         public static final String COLUMN_PROJECT_DESCRIPTION = "project_description";
+        public static final String COLUMN_PROJECT_CREATEDTIME = "project_createdtime";
+        public static final String COLUMN_PROJECT_DEADLINE = "project_deadline";
+        public static final String COLUMN_PROJECT_CREATEDBYUSERID = "project_createdbyuserid";
+        public static final String COLUMN_PROJECT_SHAREDTOUSERID = "project_sharedtouserid";
 
     public static final String TABLE_LIST = "list";
         public static final String COLUMN_LIST_ID = "list_id";
@@ -61,11 +68,12 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
             + COLUMN_ROLE_LIST_DELETE + " BOOLEAN NOT NULL CHECK (" + COLUMN_ROLE_LIST_DELETE + " IN (0, 1)) , " + COLUMN_ROLE_TASK_READ + " BOOLEAN NOT NULL CHECK (" + COLUMN_ROLE_TASK_READ + " IN (0, 1)) , "
             + COLUMN_ROLE_TASK_EDIT + " BOOLEAN NOT NULL CHECK (" + COLUMN_ROLE_TASK_EDIT + " IN (0, 1)) , " + COLUMN_ROLE_TASK_DELETE + " BOOLEAN NOT NULL CHECK (" + COLUMN_ROLE_TASK_DELETE + " IN (0, 1)));";
     public static final String CREATE_TABLE_PROJECT = "CREATE TABLE " + TABLE_PROJECT + " (" + COLUMN_PROJECT_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + COLUMN_PROJECT_NAME + " VARCHAR(255) ," + COLUMN_PROJECT_DESCRIPTION + " VARCHAR(255));";
+            + COLUMN_PROJECT_NAME + " TEXT ," + COLUMN_PROJECT_DESCRIPTION + " TEXT ," + COLUMN_PROJECT_CREATEDTIME + " DATETIME ," + COLUMN_PROJECT_DEADLINE + " DATETIME ,"
+            + COLUMN_PROJECT_CREATEDBYUSERID + " INTEGER ," + COLUMN_PROJECT_SHAREDTOUSERID + " TEXT);";
     public static final String CREATE_TABLE_LIST = "CREATE TABLE " + TABLE_LIST + " (" + COLUMN_LIST_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + COLUMN_LIST_NAME + " VARCHAR(255) ," + COLUMN_LIST_DESCRIPTION + " VARCHAR(255) ," + COLUMN_LIST_ICON + " VARCHAR(255) ," + COLUMN_LIST_PROJECT_ID + " INTEGER NOT NULL);";
+            + COLUMN_LIST_NAME + " VARCHAR(255) ," + COLUMN_LIST_DESCRIPTION + " TEXT ," + COLUMN_LIST_ICON + " VARCHAR(255) ," + COLUMN_LIST_PROJECT_ID + " INTEGER NOT NULL);";
     public static final String CREATE_TABLE_TASK = "CREATE TABLE " + TABLE_TASK + " (" + COLUMN_TASK_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + COLUMN_TASK_NAME + " VARCHAR(255) ," + COLUMN_TASK_DESCRIPTION + " VARCHAR(255) , " + COLUMN_TASK_LIST_ID + " INTEGER NOT NULL);";
+            + COLUMN_TASK_NAME + " VARCHAR(255) ," + COLUMN_TASK_DESCRIPTION + " TEXT , " + COLUMN_TASK_LIST_ID + " INTEGER NOT NULL);";
 
 
     public SQLiteDatabaseHelper(@Nullable Context context) {
@@ -117,12 +125,43 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
         values.put(COLUMN_ROLE_TASK_EDIT, role.getTask_edit());
         values.put(COLUMN_ROLE_TASK_DELETE, role.getTask_delete());
         long role_id = db.insert(TABLE_ROLE, null, values); //inserarea randului cu rolul in tabel
+        db.close();
         if (role_id == -1){
             return false;
         }else {
             return true;
         }
     }
+
+    public Role getRole(String roleName){
+        SQLiteDatabase db =this.getReadableDatabase();
+        String queryRole = "SELECT * FROM " + TABLE_ROLE + " WHERE " + COLUMN_ROLE_NAME + " = '" + roleName + "';";
+
+        Log.e(LOG, queryRole);
+
+        Cursor cursor = db.rawQuery(queryRole,null);
+
+        if (cursor !=null)
+            cursor.moveToFirst();
+        Role returnedRole = new Role();
+        returnedRole.setId(cursor.getInt(0));
+        returnedRole.setName(cursor.getString(1));
+        returnedRole.setProject_read(cursor.getInt(2) == 1);
+        returnedRole.setProject_edit(cursor.getInt(3) == 1);
+        returnedRole.setProject_delete(cursor.getInt(4) == 1);
+        returnedRole.setList_read(cursor.getInt(5) == 1);
+        returnedRole.setList_edit(cursor.getInt(6) == 1);
+        returnedRole.setList_delete(cursor.getInt(7) == 1);
+        returnedRole.setTask_read(cursor.getInt(8) == 1);
+        returnedRole.setTask_edit(cursor.getInt(9) == 1);
+        returnedRole.setTask_delete(cursor.getInt(10) == 1);
+
+        cursor.close();
+        db.close();
+
+        return returnedRole;
+    }
+
 
     public List<Role> getAllRoles(){
         List<Role> returnAllRoles = new ArrayList<>();
@@ -157,5 +196,351 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
         return returnAllRoles;
     }
 
+    public int checkIsRole(String roleName){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String queryCheckRole = "SELECT " + COLUMN_ROLE_ID + ", " + COLUMN_ROLE_NAME + " FROM " + TABLE_ROLE + ";";
+        Cursor cursor = db.rawQuery(queryCheckRole, null);
+        if(cursor.moveToFirst()){
+            do{
+                int readId = cursor.getInt(cursor.getColumnIndex(COLUMN_ROLE_ID));
+                String readRole = cursor.getString(cursor.getColumnIndex(COLUMN_ROLE_NAME));
+                if (readRole.equals(roleName))
+                    return readId;
+            }while (cursor.moveToNext());
+            cursor.close();
+            db.close();
+        }
+        return -1;
+    }
 
+    public int editRole(Role role){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_ROLE_NAME, role.getName());
+        values.put(COLUMN_ROLE_PROJECT_READ, role.getProject_read());
+        values.put(COLUMN_ROLE_PROJECT_EDIT, role.getProject_edit());
+        values.put(COLUMN_ROLE_PROJECT_DELETE, role.getProject_delete());
+        values.put(COLUMN_ROLE_LIST_READ, role.getList_read());
+        values.put(COLUMN_ROLE_LIST_EDIT, role.getList_edit());
+        values.put(COLUMN_ROLE_LIST_DELETE, role.getList_delete());
+        values.put(COLUMN_ROLE_TASK_READ, role.getTask_read());
+        values.put(COLUMN_ROLE_TASK_EDIT, role.getTask_edit());
+        values.put(COLUMN_ROLE_TASK_DELETE, role.getTask_delete());
+        if(checkIsRole(role.name) == -1)
+            return -1;
+        int returnedRoleId =db.update(TABLE_ROLE, values, COLUMN_ROLE_ID + " = ?",new String[]{String.valueOf(role.getId())});
+        db.close();
+        return returnedRoleId;
+    }
+
+    public int deleteRole(String roleName){
+        SQLiteDatabase db = this.getWritableDatabase();
+        int roleCheck = checkIsRole(roleName);
+        if (roleCheck == -1) {
+            return -1;
+        }
+        return db.delete(TABLE_ROLE,COLUMN_ROLE_ID + " = ?",new String[]{String.valueOf(checkIsRole(roleName))});
+
+    }
+
+    public int editUser(User user){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_USER_NAME, user.getName());
+        values.put(COLUMN_USER_EMAIL, user.getEmail());
+        values.put(COLUMN_USER_PASSWORD, user.getPassword());
+        values.put(COLUMN_USER_ROLE, user.getRole_name());
+        int editResult = db.update(TABLE_USER, values, COLUMN_USER_ID + " = ?", new String[]{String.valueOf(user.getId())});
+        db.close();
+        return editResult;
+    }
+
+    public long createUser(User user){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_USER_NAME, user.getName());
+        values.put(COLUMN_USER_EMAIL, user.getEmail());
+        values.put(COLUMN_USER_PASSWORD, user.getPassword());
+        values.put(COLUMN_USER_ROLE, user.getRole_name());
+        long createResult = db.insert(TABLE_USER, null,values);
+
+        db.close();
+        return createResult;
+    }
+
+    public User getUser(int userId){
+        SQLiteDatabase db = getReadableDatabase();
+        String queryGetUser = "SELECT * FROM " + TABLE_USER + " WHERE " + COLUMN_USER_ID + " = " + userId;
+        Cursor cursor = db.rawQuery(queryGetUser, null);
+
+        if (cursor != null)
+            cursor.moveToFirst();
+        User user = new User();
+        user.setId(cursor.getInt(cursor.getColumnIndex(COLUMN_USER_ID)));
+        user.setName(cursor.getString(cursor.getColumnIndex(COLUMN_USER_NAME)));
+        user.setEmail(cursor.getString(cursor.getColumnIndex(COLUMN_USER_EMAIL)));
+        user.setPassword(cursor.getString(cursor.getColumnIndex(COLUMN_USER_PASSWORD)));
+        user.setRole_name(cursor.getString(cursor.getColumnIndex(COLUMN_USER_ROLE)));
+        cursor.close();
+        db.close();
+        return user;
+    }
+
+    public List<User> getAllUsers(){
+        List<User> allUsers = new ArrayList<User>();
+        String queryGetAllUsers = "SELECT * FROM " + TABLE_USER;
+        Log.e(LOG, queryGetAllUsers);
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(queryGetAllUsers, null);
+        if (cursor.moveToFirst()){
+            do {
+                User user = new User();
+                user.setId(cursor.getInt(cursor.getColumnIndex(COLUMN_USER_ID)));
+                user.setName(cursor.getString(cursor.getColumnIndex(COLUMN_USER_NAME)));
+                user.setEmail(cursor.getString(cursor.getColumnIndex(COLUMN_USER_EMAIL)));
+                user.setPassword(cursor.getString(cursor.getColumnIndex(COLUMN_USER_PASSWORD)));
+                user.setRole_name(cursor.getString(cursor.getColumnIndex(COLUMN_USER_ROLE)));
+                allUsers.add(user);
+            }while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return allUsers;
+    }
+
+    public int deleteUser(int userId){
+        SQLiteDatabase db = getWritableDatabase();
+        int deletedUserId = db.delete(TABLE_USER, COLUMN_USER_ID + " = ?", new String[]{String.valueOf(userId)});
+        db.close();
+        return deletedUserId;
+    }
+
+    public long createProject(Project project){
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_PROJECT_NAME, project.getName());
+        values.put(COLUMN_PROJECT_DESCRIPTION, project.getDescription());
+        values.put(COLUMN_PROJECT_CREATEDTIME, project.getCreatedTime());
+        values.put(COLUMN_PROJECT_DEADLINE, project.getDeadline());
+        values.put(COLUMN_PROJECT_CREATEDBYUSERID, project.getCreatedByUserId());
+        values.put(COLUMN_PROJECT_SHAREDTOUSERID, project.getSharedToUsersId().toString());
+        long projectId = db.insert(TABLE_PROJECT, null, values);
+        db.close();
+        return projectId;
+    }
+
+    public Project getProject(int projectId){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String queryGetProject = "SELECT * FROM " + TABLE_PROJECT + " WHERE " + COLUMN_PROJECT_ID + " = " + projectId + " ;";
+        Cursor cursor = db.rawQuery(queryGetProject, null);
+        if (cursor != null)
+            cursor.moveToFirst();
+        Project project = new Project();
+        project.setId(cursor.getInt(cursor.getColumnIndex(COLUMN_PROJECT_ID)));
+        project.setName(cursor.getString(cursor.getColumnIndex(COLUMN_PROJECT_NAME)));
+        project.setDescription(cursor.getString(cursor.getColumnIndex(COLUMN_PROJECT_DESCRIPTION)));
+        project.setCreatedTime(cursor.getString(cursor.getColumnIndex(COLUMN_PROJECT_CREATEDTIME)));
+        project.setDeadline(cursor.getString(cursor.getColumnIndex(COLUMN_PROJECT_DEADLINE)));
+        project.setCreatedByUserId(cursor.getInt(cursor.getColumnIndex(COLUMN_PROJECT_CREATEDBYUSERID)));
+        project.setSharedToUsersId(cursor.getString(cursor.getColumnIndex(COLUMN_PROJECT_SHAREDTOUSERID)));
+        cursor.close();
+        db.close();
+        return project;
+    }
+
+    public List<Project> getAllProjects(){
+        List<Project> allProjects = new ArrayList<Project>();
+        String querygetAllProjects = "SELECT * FROM " + TABLE_PROJECT + " ;";
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(querygetAllProjects, null);
+        if (cursor.moveToFirst()){
+            do {
+                Project project = new Project();
+                project.setId(cursor.getInt(cursor.getColumnIndex(COLUMN_PROJECT_ID)));
+                project.setName(cursor.getString(cursor.getColumnIndex(COLUMN_PROJECT_NAME)));
+                project.setDescription(cursor.getString(cursor.getColumnIndex(COLUMN_PROJECT_DESCRIPTION)));
+                project.setCreatedTime(cursor.getString(cursor.getColumnIndex(COLUMN_PROJECT_CREATEDTIME)));
+                project.setDeadline(cursor.getString(cursor.getColumnIndex(COLUMN_PROJECT_DEADLINE)));
+                project.setCreatedByUserId(cursor.getInt(cursor.getColumnIndex(COLUMN_PROJECT_CREATEDBYUSERID)));
+                project.setSharedToUsersId(cursor.getString(cursor.getColumnIndex(COLUMN_PROJECT_SHAREDTOUSERID)));
+                allProjects.add(project);
+            }while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return allProjects;
+    }
+
+    public int editProject (Project project){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_PROJECT_NAME, project.getName());
+        values.put(COLUMN_PROJECT_DESCRIPTION, project.getDescription());
+        values.put(COLUMN_PROJECT_CREATEDTIME, project.getCreatedTime());
+        values.put(COLUMN_PROJECT_DEADLINE, project.getDeadline());
+        values.put(COLUMN_PROJECT_CREATEDBYUSERID, project.getCreatedByUserId());
+        values.put(COLUMN_PROJECT_SHAREDTOUSERID, project.getSharedToUsersId());
+        int projectId = db.update(TABLE_PROJECT, values, COLUMN_PROJECT_ID + " = ?", new String[]{String.valueOf(project.getId())});
+        db.close();
+        return projectId;
+    }
+
+    public int deleteProject (Project project){
+        SQLiteDatabase db = this.getWritableDatabase();
+        int deletedid = db.delete(TABLE_PROJECT, COLUMN_PROJECT_ID + " = ? ", new String[]{String.valueOf(project.getId())});
+        db.close();
+        return deletedid;
+    }
+
+    public long createTaskList (TaskList taskList){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_LIST_NAME, taskList.getName());
+        values.put(COLUMN_LIST_DESCRIPTION, taskList.getDescription());
+        values.put(COLUMN_LIST_ICON, taskList.getIcon());
+        values.put(COLUMN_LIST_PROJECT_ID, taskList.getProject_id());
+        long taskListId =db.insert(TABLE_LIST, null, values);
+        db.close();
+        return taskListId;
+    }
+
+    public TaskList getTaskList ( int taskListId){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String queryGetTaskList = "SELECT * FROM " + TABLE_LIST + " WHERE " + COLUMN_LIST_ID + " = " + taskListId + " ;";
+        Cursor cursor = db.rawQuery(queryGetTaskList,null);
+        if (cursor != null)
+            cursor.moveToFirst();
+        TaskList taskList = new TaskList();
+        taskList.setId(cursor.getInt(cursor.getColumnIndex(COLUMN_LIST_ID)));
+        taskList.setName(cursor.getString(cursor.getColumnIndex(COLUMN_LIST_NAME)));
+        taskList.setDescription(cursor.getString(cursor.getColumnIndex(COLUMN_LIST_DESCRIPTION)));
+        taskList.setIcon(cursor.getString(cursor.getColumnIndex(COLUMN_LIST_ICON)));
+        taskList.setProject_id(cursor.getInt(cursor.getColumnIndex(COLUMN_LIST_PROJECT_ID)));
+        cursor.close();
+        db.close();
+        return taskList;
+    }
+
+    public List<TaskList> getAllTaskLists (){
+        List<TaskList> taskLists = new ArrayList<>();
+        String queryGetAllTaskLists = "SELECT * FROM " + TABLE_LIST + " ;";
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(queryGetAllTaskLists,null);
+        if (cursor.moveToFirst()){
+            do {
+                TaskList taskList = new TaskList();
+                taskList.setId(cursor.getInt(cursor.getColumnIndex(COLUMN_LIST_ID)));
+                taskList.setName(cursor.getString(cursor.getColumnIndex(COLUMN_LIST_NAME)));
+                taskList.setDescription(cursor.getString(cursor.getColumnIndex(COLUMN_LIST_DESCRIPTION)));
+                taskList.setIcon(cursor.getString(cursor.getColumnIndex(COLUMN_LIST_ICON)));
+                taskList.setProject_id(cursor.getInt(cursor.getColumnIndex(COLUMN_LIST_PROJECT_ID)));
+                taskLists.add(taskList);
+            }while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return taskLists;
+    }
+
+    public int editTaskList(TaskList taskList) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_LIST_NAME, taskList.getName());
+        values.put(COLUMN_LIST_DESCRIPTION, taskList.getDescription());
+        values.put(COLUMN_LIST_ICON, taskList.getIcon());
+        values.put(COLUMN_LIST_PROJECT_ID, taskList.getProject_id());
+        int taskListId =db.update(TABLE_LIST, values, COLUMN_LIST_ID + " = ?", new String[]{String.valueOf(taskList.getId())});
+        db.close();
+        return taskListId;
+    }
+
+    public int deleteTaskList(int taskListId){
+        SQLiteDatabase db = this.getWritableDatabase();
+        int deletedTaskListID = db.delete(TABLE_LIST,COLUMN_LIST_ID + " = ?", new String[]{String.valueOf(taskListId)});
+        db.close();
+        return deletedTaskListID;
+    }
+
+    public long createTask(Task task){
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_TASK_NAME, task.getName());
+        values.put(COLUMN_TASK_DESCRIPTION, task.getDescription());
+        values.put(COLUMN_TASK_LIST_ID, task.getList_id());
+        long taskId = db.insert(TABLE_TASK, null, values);
+        db.close();
+        return taskId;
+    }
+    public Task getTask(int taskId){
+        String queryGetTask = "SELECT * FROM " + TABLE_TASK + " WHERE " + COLUMN_TASK_ID + " = " + taskId + ";";
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(queryGetTask, null);
+        if (cursor != null)
+            cursor.moveToFirst();
+        Task task = new Task();
+        task.setId(cursor.getInt(cursor.getColumnIndex(COLUMN_TASK_ID)));
+        task.setName(cursor.getString(cursor.getColumnIndex(COLUMN_TASK_NAME)));
+        task.setDescription(cursor.getString(cursor.getColumnIndex(COLUMN_TASK_DESCRIPTION)));
+        task.setList_id(cursor.getInt(cursor.getColumnIndex(COLUMN_TASK_LIST_ID)));
+        cursor.close();
+        db.close();
+        return task;
+    }
+
+    public List<Task> getAllTasks(){
+        List<Task> allTasks = new ArrayList<>();
+        String queryGetAllTasks = "SELECT * FROM " + TABLE_TASK + ";";
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(queryGetAllTasks, null);
+        if (cursor.moveToFirst()){
+            do {
+                Task task = new Task();
+                task.setId(cursor.getInt(cursor.getColumnIndex(COLUMN_TASK_ID)));
+                task.setName(cursor.getString(cursor.getColumnIndex(COLUMN_TASK_NAME)));
+                task.setDescription(cursor.getString(cursor.getColumnIndex(COLUMN_TASK_DESCRIPTION)));
+                task.setList_id(cursor.getInt(cursor.getColumnIndex(COLUMN_TASK_LIST_ID)));
+                allTasks.add(task);
+            }while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return allTasks;
+    }
+
+    public List<Task> getListTasks(int listId){
+        List<Task> listTasks = new ArrayList<>();
+        String queryGetAllTasks = "SELECT * FROM " + TABLE_TASK + " WHERE " + COLUMN_TASK_LIST_ID + " = " + listId + ";";
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(queryGetAllTasks, null);
+        if (cursor.moveToFirst()){
+            do {
+                Task task = new Task();
+                task.setId(cursor.getInt(cursor.getColumnIndex(COLUMN_TASK_ID)));
+                task.setName(cursor.getString(cursor.getColumnIndex(COLUMN_TASK_NAME)));
+                task.setDescription(cursor.getString(cursor.getColumnIndex(COLUMN_TASK_DESCRIPTION)));
+                task.setList_id(cursor.getInt(cursor.getColumnIndex(COLUMN_TASK_LIST_ID)));
+                listTasks.add(task);
+            }while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return listTasks;
+    }
+
+    public int editTask(Task task){
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_TASK_NAME, task.getName());
+        values.put(COLUMN_TASK_DESCRIPTION, task.getDescription());
+        values.put(COLUMN_TASK_LIST_ID, task.getList_id());
+        int taskId = db.update(TABLE_TASK, values,COLUMN_TASK_ID + " = ?", new String[]{String.valueOf(task.getId())} );
+        db.close();
+        return taskId;
+    }
+
+    public int deleteTask(int taskId){
+        SQLiteDatabase db = getWritableDatabase();
+        int deletedTaskId = db.delete(TABLE_TASK,COLUMN_TASK_ID + " = ?", new String[]{String.valueOf(taskId)} );
+        return deletedTaskId;
+    }
 }
