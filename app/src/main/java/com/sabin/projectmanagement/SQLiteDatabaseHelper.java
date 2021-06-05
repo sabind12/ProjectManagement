@@ -6,7 +6,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
@@ -243,6 +242,31 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
 
     }
 
+    public int checkIsUserEmail(String email){
+        SQLiteDatabase db =this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_USER + " WHERE " + COLUMN_USER_EMAIL + " = ?", new String[]{email});
+        int userNumber = cursor.getCount();
+        cursor.close();
+        db.close();
+        return userNumber;
+    }
+
+    public int checkUserEmailPassCombo(String email, String password){
+        SQLiteDatabase db =this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_USER + " WHERE " + COLUMN_USER_EMAIL + " = ?", new String[]{email});
+        int userId = -1;
+        String dbPassword;
+        if (cursor != null)
+        cursor.moveToFirst();
+            dbPassword = cursor.getString(cursor.getColumnIndex(COLUMN_USER_PASSWORD));
+            if (password.equals(dbPassword))
+            userId = cursor.getInt(cursor.getColumnIndex(COLUMN_USER_ID));
+        else userId = -1;
+        cursor.close();
+        db.close();
+        return userId;
+    }
+
     public int editUser(User user){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -284,6 +308,16 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
         db.close();
         return user;
+    }
+
+    public int getUserId(String email){
+        SQLiteDatabase db = getReadableDatabase();
+        String queryGetUserID = "SELECT * FROM " + TABLE_USER +  " WHERE " + COLUMN_USER_EMAIL + " = " + email;
+        Cursor cursor = db.rawQuery(queryGetUserID, null);
+        int userId = cursor.getInt(cursor.getColumnIndex(COLUMN_USER_ID));
+        cursor.close();
+        db.close();
+        return userId;
     }
 
     public List<User> getAllUsers(){

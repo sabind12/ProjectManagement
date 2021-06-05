@@ -1,15 +1,12 @@
 package com.sabin.projectmanagement;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.List;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -17,9 +14,21 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        SQLiteDatabaseHelper db = new SQLiteDatabaseHelper(this);
+        User user = null;
         Fragment taskFragment = new TaskFragment();
         Fragment taskFragment2 = new TaskFragment2();
+
+        Intent intent = getIntent();
+        String email = intent.getStringExtra("email");
+
+        if (email == null){
+            Intent intentlogin = new Intent(getApplicationContext(), LoginActivity.class);
+            startActivity(intentlogin);
+        }
+        //user = db.getUser(db.getUserId(email));
+
+
 
         getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).replace(R.id.flFragmentTask, taskFragment, null).commit();
 
@@ -50,8 +59,8 @@ public class MainActivity extends AppCompatActivity {
 
 
             SQLiteDatabaseHelper dbHelper = new SQLiteDatabaseHelper(MainActivity.this);
-        boolean role = dbHelper.createRole(admin);
-        Toast.makeText(MainActivity.this, "Role written to db successfully", Toast.LENGTH_LONG).show();
+        //boolean role = dbHelper.createRole(admin);
+        //Toast.makeText(MainActivity.this, "Role written to db successfully", Toast.LENGTH_LONG).show();
 
 
     }
