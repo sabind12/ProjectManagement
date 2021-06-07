@@ -7,35 +7,57 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
+
+    //private RecyclerView tasks;
+    //private RecyclerView.Adapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         SQLiteDatabaseHelper db = new SQLiteDatabaseHelper(this);
         User user = null;
-        Fragment taskFragment = new TaskFragment();
+        Fragment taskFragment = new TaskListFragment();
         Fragment taskFragment2 = new TaskFragment2();
 
         Intent intent = getIntent();
         String email = intent.getStringExtra("email");
 
+        ArrayList<Task> tasks = initTasklist();
+
         if (email == null){
             Intent intentlogin = new Intent(getApplicationContext(), LoginActivity.class);
             startActivity(intentlogin);
         }
-        //user = db.getUser(db.getUserId(email));
 
 
 
-        getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).replace(R.id.flFragmentTask, taskFragment, null).commit();
+
+
+        //getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).replace(R.id.flFragmentTask, taskFragment, null).commit();
 
         findViewById(R.id.btnFragment1).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getSupportFragmentManager().beginTransaction().replace(R.id.flFragmentTask, taskFragment).commit();
+
+                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                TaskListFragment fragmentTaskList = new TaskListFragment();
+                ArrayList<Task> tasklist =tasks;
+                Bundle taskFragmentBundle = new Bundle();
+                taskFragmentBundle.putSerializable("taskArray", tasklist);
+                fragmentTaskList.setArguments(taskFragmentBundle);
+                fragmentTransaction.replace(R.id.flFragmentTask, fragmentTaskList);
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
+                //getSupportFragmentManager().beginTransaction().replace(R.id.flFragmentTask, taskFragment).commit();
             }
         });
 
@@ -64,4 +86,14 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+
+    private ArrayList<Task> initTasklist(){
+        ArrayList<Task> taskList = new ArrayList<>();
+        taskList.add(new Task("Task 1", "Desc 1", 1));
+        taskList.add(new Task("Task 2", "Desc 2", 2));
+        taskList.add(new Task("Task 3", "Desc 3", 3));
+        taskList.add(new Task("Task 4", "Desc 4", 4));
+        return taskList;
+    }
+
 }

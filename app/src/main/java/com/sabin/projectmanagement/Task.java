@@ -1,6 +1,8 @@
 package com.sabin.projectmanagement;
 
-public class Task {
+import java.io.Serializable;
+
+public class Task implements Serializable {
     int id;
     String name;
     String description;
