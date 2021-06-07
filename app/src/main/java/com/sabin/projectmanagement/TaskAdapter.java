@@ -19,13 +19,15 @@ import java.util.List;
 public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder>{
 
     private static final String TAG = "TaskAdapter";
+    private final itemClickListener listener;
 
     private Context mContext;
     private final List<Task> tasks;
 
-    public TaskAdapter(Context mContext, List<Task> tasks) {
+    public TaskAdapter(Context mContext, List<Task> tasks, itemClickListener listener) {
         this.mContext = mContext;
         this.tasks = tasks;
+        this.listener = listener;
     }
 
     @NonNull
@@ -47,7 +49,8 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder>{
         holder.parentTask_layout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "onClick: Clicked on: " + tasks.get(position));
+                Log.d(TAG, "onClick: Clicked on: " + task);
+                listener.onItemClick(task);
             }
         });
 
@@ -75,5 +78,9 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder>{
            taskDescription = itemView.findViewById(R.id.taskItemDescription);
            parentTask_layout = itemView.findViewById(R.id.parentTask_layout);
        }
+   }
+   public interface itemClickListener {
+        void onItemClick(Task task);
+
    }
 }

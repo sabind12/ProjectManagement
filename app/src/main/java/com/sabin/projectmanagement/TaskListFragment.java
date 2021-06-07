@@ -1,5 +1,6 @@
 package com.sabin.projectmanagement;
 
+import android.app.Activity;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -12,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -22,35 +24,18 @@ import java.util.ArrayList;
  * Use the {@link TaskListFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class TaskListFragment extends Fragment {
+public class TaskListFragment extends Fragment implements TaskAdapter.itemClickListener {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
     private TaskAdapter mTaskAdapter;
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+
 
     public TaskListFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment TaskListFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static TaskListFragment newInstance(String param1, String param2) {
         TaskListFragment fragment = new TaskListFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -59,8 +44,6 @@ public class TaskListFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
 
@@ -76,9 +59,15 @@ public class TaskListFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         RecyclerView taskRecyclerView = view.findViewById(R.id.taskRecyclerView);
         ArrayList<Task> taskArrayList = (ArrayList<Task>) getArguments().getSerializable("taskArray");
-        mTaskAdapter = new TaskAdapter( getContext(), taskArrayList);
+        mTaskAdapter = new TaskAdapter( getContext(), taskArrayList, this);
         taskRecyclerView.setAdapter(mTaskAdapter);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         taskRecyclerView.setLayoutManager(layoutManager);
+    }
+
+    @Override
+    public void onItemClick(Task task) {
+        ((MainActivity) getActivity()).openTaskFragment(task);
+
     }
 }

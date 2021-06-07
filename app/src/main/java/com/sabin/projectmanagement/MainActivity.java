@@ -8,7 +8,6 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
@@ -24,13 +23,19 @@ public class MainActivity extends AppCompatActivity {
 
         SQLiteDatabaseHelper db = new SQLiteDatabaseHelper(this);
         User user = null;
-        Fragment taskFragment = new TaskListFragment();
-        Fragment taskFragment2 = new TaskFragment2();
+        //Fragment taskFragment = new TaskListFragment();
+        Fragment taskFragment2 = new TaskFragment();
 
         Intent intent = getIntent();
         String email = intent.getStringExtra("email");
 
-        ArrayList<Task> tasks = initTasklist();
+        ArrayList<Task> tasks = new ArrayList<>(db.getAllTasks());
+
+        // ArrayList<Task> tasks = initTasklist();
+        //db.createTask(tasks.get(0));
+        //db.createTask(tasks.get(1));
+        //db.createTask(tasks.get(2));
+        //db.createTask(tasks.get(3));
 
         if (email == null){
             Intent intentlogin = new Intent(getApplicationContext(), LoginActivity.class);
@@ -96,4 +101,16 @@ public class MainActivity extends AppCompatActivity {
         return taskList;
     }
 
+    public void  openTaskFragment (Task task){
+        FragmentTransaction fragmentTransaction =  getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        TaskFragmentDetail fragmentTaskDetail = new TaskFragmentDetail();
+        Bundle taskFragmentBundle = new Bundle();
+        taskFragmentBundle.putSerializable("task", task);
+        fragmentTaskDetail.setArguments(taskFragmentBundle);
+        fragmentTransaction.replace(R.id.flFragmentTask, fragmentTaskDetail);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+
+    }
 }
