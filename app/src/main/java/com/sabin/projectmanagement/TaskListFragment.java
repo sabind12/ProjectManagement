@@ -67,7 +67,7 @@ public class TaskListFragment extends Fragment implements TaskAdapter.itemClickL
 
     @Override
     public void onItemClick(Task task) {
-        ((MainActivity) getActivity()).openTaskFragment(task);
+        ((MainActivity) getActivity()).openTaskFragment(task);  //apelarea functiei din MainActivity pentru a deschide un fragment de detaliu editabil al taskului
 
     }
 }

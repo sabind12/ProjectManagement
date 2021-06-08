@@ -5,9 +5,11 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -426,6 +428,21 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
         return deletedid;
     }
 
+    public ArrayList<ArrayList<Task>> getAllTaskListsTasks(int projectID){
+        ArrayList<ArrayList<Task>> projectLists = new ArrayList<>();
+        ArrayList<Integer> listIds = new ArrayList<>();
+        ArrayList<TaskList> lists = (ArrayList<TaskList>) getAllTaskLists(projectID);
+        for (int i = 1; i < lists.size(); i++) {
+            listIds.add(lists.get(i).getId());
+        }
+        for (int i = 1; i < listIds.size(); i++) {
+            ArrayList<Task> tasks;
+            tasks = (ArrayList<Task>) getListTasks(i);
+            projectLists.add(tasks);
+        }
+        return projectLists;
+    }
+
     public long createTaskList (TaskList taskList){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -455,9 +472,9 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
         return taskList;
     }
 
-    public List<TaskList> getAllTaskLists (){
+    public List<TaskList> getAllTaskLists (int projectId){
         List<TaskList> taskLists = new ArrayList<>();
-        String queryGetAllTaskLists = "SELECT * FROM " + TABLE_LIST + " ;";
+        String queryGetAllTaskLists = "SELECT * FROM " + TABLE_LIST + " WHERE " + COLUMN_LIST_PROJECT_ID + " = " + projectId + " ;";
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(queryGetAllTaskLists,null);
         if (cursor.moveToFirst()){

@@ -49,7 +49,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder>{
         holder.parentTask_layout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "onClick: Clicked on: " + task);
+                Log.d(TAG, "onClick: Clicked on: " + task.getName() + task);
                 listener.onItemClick(task);
             }
         });
