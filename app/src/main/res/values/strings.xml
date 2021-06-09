@@ -9,4 +9,8 @@
     <string name="repeat_password">Repeat Password</string>
     <string name="name">Name</string>
     <string name="description">description</string>
+    <string name="delete">Delete</string>
+    <string name="save">Save</string>
+    <string name="fragment_detail_description">Fragment Detail Description</string>
+    <string name="fragment_detail_name">Fragment Detail Name</string>
 </resources>

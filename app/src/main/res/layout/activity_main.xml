@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+
     tools:context=".MainActivity">
+
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/listTabLayout"
@@ -24,6 +26,17 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/listTabLayout" />
+
+    <FrameLayout
+        android:id="@+id/flFragmentTask"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="parent" >
+
+    </FrameLayout>
 <!--
     <Button
         android:id="@+id/btnFragment1"
@@ -45,14 +58,6 @@
         app:layout_constraintStart_toEndOf="@+id/btnFragment1"
         app:layout_constraintTop_toTopOf="parent" />
 -->
-    <FrameLayout
-        android:id="@+id/flFragmentTask"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:elevation="4dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="parent" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

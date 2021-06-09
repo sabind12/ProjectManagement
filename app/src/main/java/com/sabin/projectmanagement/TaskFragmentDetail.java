@@ -1,5 +1,7 @@
 package com.sabin.projectmanagement;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -55,9 +57,18 @@ public class TaskFragmentDetail extends Fragment {
                 saveTask.setId(task.getId());
                 saveTask.setList_id(task.getList_id());
                 db.editTask(saveTask);
-
+                //((MainActivity) getActivity()).refreshListTasksLists(1);
+                //((MainActivity) getActivity()).refreshViewPager();
                 getActivity().onBackPressed();
+            }
+        });
 
+        view.findViewById(R.id.taskDetailDeleteButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SQLiteDatabaseHelper db = new SQLiteDatabaseHelper(getContext());
+                db.deleteTask(task.id);
+                getActivity().onBackPressed();
             }
         });
 

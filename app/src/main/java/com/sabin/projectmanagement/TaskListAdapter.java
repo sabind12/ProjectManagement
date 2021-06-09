@@ -14,14 +14,19 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
+import static androidx.viewpager.widget.PagerAdapter.POSITION_NONE;
+
 public class TaskListAdapter extends FragmentStateAdapter {
 
     private ArrayList<ArrayList<Task>> taskListsTasks;
+    private ArrayList<TaskList> taskLists;
 
-    public TaskListAdapter(@NonNull @NotNull FragmentManager fragmentManager, @NonNull @NotNull Lifecycle lifecycle, ArrayList<ArrayList<Task>> taskListsTasks) {
+    public TaskListAdapter(@NonNull @NotNull FragmentManager fragmentManager, @NonNull @NotNull Lifecycle lifecycle, ArrayList<ArrayList<Task>> taskListsTasks, ArrayList<TaskList> taskLists) {
         super(fragmentManager, lifecycle);
         this.taskListsTasks = taskListsTasks;
+        this.taskLists = taskLists;
     }
+
 
     @NonNull
     @NotNull
@@ -33,13 +38,16 @@ public class TaskListAdapter extends FragmentStateAdapter {
         //ArrayList<Task> listTaskArr;
         //listTaskArr = (ArrayList<Task>) db.getListTasks(1);
         Bundle listTaskBundle = new Bundle();
+        if (taskListsTasks.size() > position)
         listTaskBundle.putSerializable("taskArray",taskListsTasks.get(position));
+        else
+            listTaskBundle.putSerializable("taskArray",new ArrayList<ArrayList<Task>>());
         taskListFragment.setArguments(listTaskBundle);
         return taskListFragment;
     }
 
     @Override
     public int getItemCount() {
-        return taskListsTasks.size();
+        return taskLists.size();
     }
 }

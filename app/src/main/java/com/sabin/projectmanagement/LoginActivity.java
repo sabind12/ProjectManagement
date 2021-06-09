@@ -44,6 +44,7 @@ public class LoginActivity extends AppCompatActivity {
                         if (checkUserPass > -1){
                             Intent intent =new Intent(getApplicationContext(), MainActivity.class);
                             intent.putExtra("email", email);
+                            //finish();
                             startActivity(intent);
                         }
 

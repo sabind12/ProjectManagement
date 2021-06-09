@@ -1,6 +1,7 @@
 package com.sabin.projectmanagement;
 
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
@@ -16,6 +17,7 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -35,24 +37,30 @@ public class MainActivity extends AppCompatActivity {
 
         ArrayList<Task> tasks = new ArrayList<>(db.getAllTasks());
         ArrayList<ArrayList<Task>> taskListsTasks = new ArrayList<>();
-        taskListsTasks = db.getAllTaskListsTasks(1);
+        taskListsTasks = refreshListTasksLists(1);
 
         Intent intent = getIntent();
         String email = intent.getStringExtra("email");
+
+        ArrayList<TaskList> taskLists = (ArrayList<TaskList>) db.getAllTaskLists(1);
 
         listTabLayout = findViewById(R.id.listTabLayout);
         listViewPager2 = findViewById(R.id.listViewPager2);
 
         FragmentManager fragmentManager = getSupportFragmentManager();
-        taskListAdapter = new TaskListAdapter(fragmentManager, getLifecycle(), taskListsTasks);
+        taskListAdapter = new TaskListAdapter(fragmentManager, getLifecycle(), taskListsTasks, taskLists);
         listViewPager2.setAdapter(taskListAdapter);
 
+        for (int i = 0; i < taskLists.size(); i++) {
+            listTabLayout.addTab(listTabLayout.newTab().setText(taskLists.get(i).name));
+        }
+        /*
         listTabLayout.addTab(listTabLayout.newTab().setText("First"));
         listTabLayout.addTab(listTabLayout.newTab().setText("Second"));
         listTabLayout.addTab(listTabLayout.newTab().setText("Third"));
         listTabLayout.addTab(listTabLayout.newTab().setText("Fourth"));
         listTabLayout.addTab(listTabLayout.newTab().setText("Fifth"));
-
+*/
         listTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -93,7 +101,6 @@ public class MainActivity extends AppCompatActivity {
             Intent intentlogin = new Intent(getApplicationContext(), LoginActivity.class);
             startActivity(intentlogin);
         }
-
 
 
 
@@ -166,5 +173,16 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public ArrayList<ArrayList<Task>> refreshListTasksLists (int projectId){
+        SQLiteDatabaseHelper db = new SQLiteDatabaseHelper(this);
+        ArrayList<ArrayList<Task>> taskListsTasks;
+        taskListsTasks = db.getAllTaskListsTasks(projectId);
+        return taskListsTasks;
+    }
+
+//    public void refreshViewPager (){
+//        Objects.requireNonNull(this.listViewPager2.getAdapter()).notifyDataSetChanged();
+//
+//    }
 
 }
