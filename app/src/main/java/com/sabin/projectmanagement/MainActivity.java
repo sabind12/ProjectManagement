@@ -5,6 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
@@ -32,21 +33,15 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         SQLiteDatabaseHelper db = new SQLiteDatabaseHelper(this);
-        User user = null;
-        Fragment taskFragment2 = new TaskFragment();
-
-        ArrayList<Task> tasks = new ArrayList<>(db.getAllTasks());
-        ArrayList<ArrayList<Task>> taskListsTasks = new ArrayList<>();
+        ArrayList<ArrayList<Task>> taskListsTasks;
         taskListsTasks = refreshListTasksLists(1);
 
         Intent intent = getIntent();
         String email = intent.getStringExtra("email");
 
         ArrayList<TaskList> taskLists = (ArrayList<TaskList>) db.getAllTaskLists(1);
-
         listTabLayout = findViewById(R.id.listTabLayout);
         listViewPager2 = findViewById(R.id.listViewPager2);
-
         FragmentManager fragmentManager = getSupportFragmentManager();
         taskListAdapter = new TaskListAdapter(fragmentManager, getLifecycle(), taskListsTasks, taskLists);
         listViewPager2.setAdapter(taskListAdapter);
@@ -54,13 +49,7 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < taskLists.size(); i++) {
             listTabLayout.addTab(listTabLayout.newTab().setText(taskLists.get(i).name));
         }
-        /*
-        listTabLayout.addTab(listTabLayout.newTab().setText("First"));
-        listTabLayout.addTab(listTabLayout.newTab().setText("Second"));
-        listTabLayout.addTab(listTabLayout.newTab().setText("Third"));
-        listTabLayout.addTab(listTabLayout.newTab().setText("Fourth"));
-        listTabLayout.addTab(listTabLayout.newTab().setText("Fifth"));
-*/
+
         listTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -77,7 +66,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
         listViewPager2.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageSelected(int position) {
@@ -85,6 +73,32 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        LinearLayout listTabStrip = (LinearLayout) listTabLayout.getChildAt(0);
+        for (int i = 0; i < listTabStrip.getChildCount(); i++) {
+            View currentChild = listTabStrip.getChildAt(i);
+            // Set LongClick listener to each Tab
+            currentChild.setOnLongClickListener(new View.OnLongClickListener() {
+                @RequiresApi(api = Build.VERSION_CODES.O)
+                @Override
+                public boolean onLongClick(View v) {
+                    Toast.makeText(MainActivity.this, "Tab clicked: " + currentChild.getTooltipText(), Toast.LENGTH_SHORT).show();
+                    for (int j = 0; j < taskLists.size(); j++) {
+                        String currentChildName = currentChild.getTooltipText().toString();
+                        if (taskLists.get(j).getName().equals(currentChildName))
+                            openTaskListFragment(taskLists.get(j).getId());
+                    }
+                    return true;
+                }
+            });
+        }
+        findViewById(R.id.buttonNewList).setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public void onClick(View v) {
+                String selectedTabName = listTabStrip.getChildAt(listTabLayout.getSelectedTabPosition()).getTooltipText().toString();
+                Toast.makeText(MainActivity.this, selectedTabName, Toast.LENGTH_LONG).show();
+            }
+        });
 
 
         // ArrayList<Task> tasks = initTasklist();
@@ -160,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
         return taskList;
     }
 */
-    public void  openTaskFragment (Task task){ //Functie pentru deschiderea unui fragment editabil de detaliu al taskului
+    public void openTaskFragment (Task task){ //Functie pentru deschiderea unui fragment editabil de detaliu al taskului
         FragmentTransaction fragmentTransaction =  getSupportFragmentManager().beginTransaction();
         fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         TaskFragmentDetail fragmentTaskDetail = new TaskFragmentDetail();
@@ -168,6 +182,16 @@ public class MainActivity extends AppCompatActivity {
         taskFragmentBundle.putSerializable("task", task);
         fragmentTaskDetail.setArguments(taskFragmentBundle);
         fragmentTransaction.replace(R.id.flFragmentTask, fragmentTaskDetail);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+
+    }
+
+    public void openTaskListFragment (int taskListId){ //Functie pentru deschiderea unui fragment editabil de detaliu al taskului
+        FragmentTransaction fragmentTransaction =  getSupportFragmentManager().beginTransaction();
+        //fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        TaskListDetailFragment fragmentTaskListDetail = TaskListDetailFragment.newInstance(taskListId);
+        fragmentTransaction.replace(R.id.flFragmentTask, fragmentTaskListDetail);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
 

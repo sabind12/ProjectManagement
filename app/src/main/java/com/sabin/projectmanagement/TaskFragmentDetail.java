@@ -10,14 +10,7 @@ import android.widget.EditText;
 
 import androidx.fragment.app.Fragment;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link TaskFragmentDetail#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class TaskFragmentDetail extends Fragment {
-
-
 
     public TaskFragmentDetail() {
         // Required empty public constructor

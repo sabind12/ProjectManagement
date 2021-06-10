@@ -59,10 +59,10 @@ public class TaskListFragment extends Fragment implements TaskAdapter.itemClickL
         super.onViewCreated(view, savedInstanceState);
         RecyclerView taskRecyclerView = view.findViewById(R.id.taskRecyclerView);
         ArrayList<Task> taskArrayList = (ArrayList<Task>) getArguments().getSerializable("taskArray");
-        mTaskAdapter = new TaskAdapter( getContext(), taskArrayList, this);
-        taskRecyclerView.setAdapter(mTaskAdapter);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         taskRecyclerView.setLayoutManager(layoutManager);
+        mTaskAdapter = new TaskAdapter( getContext(), taskArrayList, this);
+        taskRecyclerView.setAdapter(mTaskAdapter);
     }
 
     @Override

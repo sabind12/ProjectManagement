@@ -164,8 +164,8 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
     }
 
 
-    public List<Role> getAllRoles(){
-        List<Role> returnAllRoles = new ArrayList<>();
+    public ArrayList<Role> getAllRoles(){
+        ArrayList<Role> returnAllRoles = new ArrayList<>();
         String queryGetAllRoles = "SELECT * FROM " + TABLE_ROLE + ";";
 
         SQLiteDatabase db = this.getReadableDatabase();
@@ -322,8 +322,8 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
         return userId;
     }
 
-    public List<User> getAllUsers(){
-        List<User> allUsers = new ArrayList<User>();
+    public ArrayList<User> getAllUsers(){
+        ArrayList<User> allUsers = new ArrayList<User>();
         String queryGetAllUsers = "SELECT * FROM " + TABLE_USER;
         Log.e(LOG, queryGetAllUsers);
         SQLiteDatabase db = this.getReadableDatabase();
@@ -384,8 +384,8 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
         return project;
     }
 
-    public List<Project> getAllProjects(){
-        List<Project> allProjects = new ArrayList<Project>();
+    public ArrayList<Project> getAllProjects(){
+        ArrayList<Project> allProjects = new ArrayList<Project>();
         String querygetAllProjects = "SELECT * FROM " + TABLE_PROJECT + " ;";
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(querygetAllProjects, null);
@@ -472,8 +472,8 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
         return taskList;
     }
 
-    public List<TaskList> getAllTaskLists (int projectId){
-        List<TaskList> taskLists = new ArrayList<>();
+    public ArrayList<TaskList> getAllTaskLists (int projectId){
+        ArrayList<TaskList> taskLists = new ArrayList<>();
         String queryGetAllTaskLists = "SELECT * FROM " + TABLE_LIST + " WHERE " + COLUMN_LIST_PROJECT_ID + " = " + projectId + " ;";
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(queryGetAllTaskLists,null);
@@ -506,10 +506,15 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
     }
 
     public int deleteTaskList(int taskListId){
+        ArrayList<Task> listTasks;
+        listTasks = getListTasks(taskListId);
+        for (int i = 0; i <listTasks.size() ; i++) {
+            deleteTask(listTasks.get(i).getId());
+        }
         SQLiteDatabase db = this.getWritableDatabase();
-        int deletedTaskListID = db.delete(TABLE_LIST,COLUMN_LIST_ID + " = ?", new String[]{String.valueOf(taskListId)});
+        int taskDeleted = db.delete(TABLE_LIST,COLUMN_LIST_ID + " = ?", new String[]{String.valueOf(taskListId)});
         db.close();
-        return deletedTaskListID;
+        return taskDeleted;
     }
 
     public long createTask(Task task){
@@ -538,8 +543,8 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
         return task;
     }
 
-    public List<Task> getAllTasks(){
-        List<Task> allTasks = new ArrayList<>();
+    public ArrayList<Task> getAllTasks(){
+        ArrayList<Task> allTasks = new ArrayList<>();
         String queryGetAllTasks = "SELECT * FROM " + TABLE_TASK + ";";
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(queryGetAllTasks, null);
@@ -558,8 +563,8 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
         return allTasks;
     }
 
-    public List<Task> getListTasks(int listId){
-        List<Task> listTasks = new ArrayList<>();
+    public ArrayList<Task> getListTasks(int listId){
+        ArrayList<Task> listTasks = new ArrayList<>();
         String queryGetAllTasks = "SELECT * FROM " + TABLE_TASK + " WHERE " + COLUMN_TASK_LIST_ID + " = " + listId + ";";
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(queryGetAllTasks, null);

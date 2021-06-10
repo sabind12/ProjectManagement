@@ -14,7 +14,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-import static androidx.viewpager.widget.PagerAdapter.POSITION_NONE;
 
 public class TaskListAdapter extends FragmentStateAdapter {
 

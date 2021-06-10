@@ -46,7 +46,8 @@ public class LoginActivity extends AppCompatActivity {
                             intent.putExtra("email", email);
                             //finish();
                             startActivity(intent);
-                        }
+                        }else
+                            Toast.makeText(LoginActivity.this, "Email password combination incorrect", Toast.LENGTH_LONG).show();
 
                     }
                 }

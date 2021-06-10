@@ -1,6 +1,6 @@
 package com.sabin.projectmanagement;
 
-public class TaskList<R> {
+public class TaskList {
 
     int id;
     String name;

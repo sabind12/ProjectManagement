@@ -15,49 +15,69 @@
         android:layout_marginTop="5dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent"
+        app:tabMode="scrollable"/>
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/listViewPager2"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="5dp"
+        android:layout_marginBottom="50dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/listTabLayout" />
 
-    <FrameLayout
-        android:id="@+id/flFragmentTask"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+    <Button
+        android:id="@+id/buttonMoveTaskLeft"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Move Task\nLeft"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/buttonNewList"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/buttonNewList"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New\nList"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/buttonNewTask"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/buttonMoveTaskLeft" />
+
+    <Button
+        android:id="@+id/buttonNewTask"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New\nTask"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/buttonMoveTaskRight"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/buttonNewList" />
+
+    <Button
+        android:id="@+id/buttonMoveTaskRight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Move Task\nRight"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="parent" >
-
-    </FrameLayout>
-<!--
-    <Button
-        android:id="@+id/btnFragment1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Fragment 1"
-        app:layout_constraintEnd_toStartOf="@+id/btnFragment2"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toEndOf="@+id/buttonNewTask" />
 
-    <Button
-        android:id="@+id/btnFragment2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Fragment 2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/btnFragment1"
-        app:layout_constraintTop_toTopOf="parent" />
--->
+        <FrameLayout
+            android:id="@+id/flFragmentTask"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="parent"
+            android:elevation="5dp" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

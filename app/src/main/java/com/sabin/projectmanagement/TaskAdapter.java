@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -19,6 +20,7 @@ import java.util.List;
 public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder>{
 
     private static final String TAG = "TaskAdapter";
+
     private final itemClickListener listener;
 
     private Context mContext;
@@ -49,8 +51,15 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder>{
         holder.parentTask_layout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+            }
+        });
+        holder.parentTask_layout.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
                 Log.d(TAG, "onClick: Clicked on: " + task.getName() + task);
                 listener.onItemClick(task);
+                return false;
             }
         });
 
@@ -66,6 +75,11 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder>{
         }
     }
 
+    public Task removeTaskItem(int position) {
+        final Task removedTask = tasks.remove(position);
+        notifyItemRemoved(position);
+        return removedTask;
+    }
     public class ViewHolder extends RecyclerView.ViewHolder{
 
        TextView taskName;
