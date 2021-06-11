@@ -432,10 +432,10 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
         ArrayList<ArrayList<Task>> projectLists = new ArrayList<>();
         ArrayList<Integer> listIds = new ArrayList<>();
         ArrayList<TaskList> lists = (ArrayList<TaskList>) getAllTaskLists(projectID);
-        for (int i = 1; i < lists.size(); i++) {
+        for (int i = 0; i < lists.size(); i++) {
             listIds.add(lists.get(i).getId());
         }
-        for (int i = 1; i < listIds.size(); i++) {
+        for (int i = 1; i <= listIds.size(); i++) {
             ArrayList<Task> tasks;
             tasks = (ArrayList<Task>) getListTasks(i);
             projectLists.add(tasks);
@@ -472,6 +472,18 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
         return taskList;
     }
 
+    public int getTaskListIdByName (String taskListName){
+        SQLiteDatabase db = getReadableDatabase();
+        String queryGetTaskListIdByName = "SELECT " + COLUMN_LIST_ID + " FROM " + TABLE_LIST + " WHERE " + COLUMN_LIST_NAME + " = '" + taskListName + "' ;";
+        Cursor cursor = db.rawQuery(queryGetTaskListIdByName, null);
+        if (cursor != null)
+            cursor.moveToFirst();
+        int taskListId = cursor.getInt(cursor.getColumnIndex(COLUMN_LIST_ID));
+        cursor.close();
+        db.close();
+        return taskListId;
+    }
+
     public ArrayList<TaskList> getAllTaskLists (int projectId){
         ArrayList<TaskList> taskLists = new ArrayList<>();
         String queryGetAllTaskLists = "SELECT * FROM " + TABLE_LIST + " WHERE " + COLUMN_LIST_PROJECT_ID + " = " + projectId + " ;";
@@ -506,14 +518,36 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
     }
 
     public int deleteTaskList(int taskListId){
+        ArrayList<TaskList> taskList = getAllTaskLists(1);
         ArrayList<Task> listTasks;
         listTasks = getListTasks(taskListId);
-        for (int i = 0; i <listTasks.size() ; i++) {
+        for (int i = 0; i < listTasks.size() ; i++) {
             deleteTask(listTasks.get(i).getId());
         }
         SQLiteDatabase db = this.getWritableDatabase();
         int taskDeleted = db.delete(TABLE_LIST,COLUMN_LIST_ID + " = ?", new String[]{String.valueOf(taskListId)});
         db.close();
+        taskList.remove(taskListId-1);
+        for (int i = taskListId; i <= taskList.size(); i++) {
+            listTasks.clear();
+            listTasks = getListTasks(i+1);
+            for (int j = 0; j < listTasks.size(); j++) {
+                listTasks.get(j).setList_id(i);
+                editTask(listTasks.get(j));
+            }
+            taskList.get(i-1).setId(i);
+
+            db = this.getWritableDatabase();
+            ContentValues values = new ContentValues();
+            values.put(COLUMN_LIST_ID, taskList.get(i-1).getId());
+            values.put(COLUMN_LIST_NAME, taskList.get(i-1).getName());
+            values.put(COLUMN_LIST_DESCRIPTION, taskList.get(i-1).getDescription());
+            values.put(COLUMN_LIST_ICON, taskList.get(i-1).getIcon());
+            values.put(COLUMN_LIST_PROJECT_ID, taskList.get(i-1).getProject_id());
+            db.update(TABLE_LIST, values, COLUMN_LIST_ID + " = ?", new String[]{String.valueOf(taskList.get(i-1).getId()+1)});
+            db.close();
+        }
+
         return taskDeleted;
     }
 
@@ -597,6 +631,7 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
     public int deleteTask(int taskId){
         SQLiteDatabase db = getWritableDatabase();
         int deletedTaskId = db.delete(TABLE_TASK,COLUMN_TASK_ID + " = ?", new String[]{String.valueOf(taskId)} );
+        db.close();
         return deletedTaskId;
     }
 }

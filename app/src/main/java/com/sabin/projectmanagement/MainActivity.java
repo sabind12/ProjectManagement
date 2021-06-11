@@ -25,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
     TabLayout listTabLayout;
     ViewPager2 listViewPager2;
     TaskListAdapter taskListAdapter;
+    //TaskAdapter taskAdapter;
 
     @Override
     protected void onStart() {
@@ -85,12 +86,62 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         }
+
+        findViewById(R.id.buttonMoveTaskLeft).setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public void onClick(View v) {
+                if((listTabLayout.getSelectedTabPosition()-1) >= 0){
+                String prevTabName = listTabStrip.getChildAt(listTabLayout.getSelectedTabPosition()-1).getTooltipText().toString();
+                    SQLiteDatabaseHelper db = new SQLiteDatabaseHelper(MainActivity.this);
+                    int nextListId = db.getTaskListIdByName(prevTabName);
+                    Task task = TaskAdapter.selectedTask;
+                    task.setList_id(nextListId);
+                    db.editTask(task);
+                    Toast.makeText(MainActivity.this, task.getName(), Toast.LENGTH_SHORT).show();
+                }else
+                    Toast.makeText(MainActivity.this, "No List to the Left", Toast.LENGTH_SHORT).show();
+            }
+        });
         findViewById(R.id.buttonNewList).setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View v) {
                 String selectedTabName = listTabStrip.getChildAt(listTabLayout.getSelectedTabPosition()).getTooltipText().toString();
-                Toast.makeText(MainActivity.this, selectedTabName, Toast.LENGTH_LONG).show();
+                Toast.makeText(MainActivity.this, selectedTabName, Toast.LENGTH_SHORT).show();
+            }
+        });
+        findViewById(R.id.buttonNewTask).setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public void onClick(View v) {
+                String selectedTabName = listTabStrip.getChildAt(listTabLayout.getSelectedTabPosition()).getTooltipText().toString();
+                Toast.makeText(MainActivity.this, selectedTabName, Toast.LENGTH_SHORT).show();
+                SQLiteDatabaseHelper db = new SQLiteDatabaseHelper(MainActivity.this);
+                int selectedListId = db.getTaskListIdByName(selectedTabName);
+                Task newTask = new Task("Task name", "Task Description", selectedListId);
+                int newTaskId = (int)db.createTask(newTask);
+
+                openTaskFragment(db.getTask(newTaskId));
+                //String selectedTabName = listTabStrip.getChildAt(listTabLayout.getSelectedTabPosition()).getTooltipText().toString();
+                // int selectedListId = db.getTaskListIdByName(selectedTabName);
+            }
+        });
+        findViewById(R.id.buttonMoveTaskRight).setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public void onClick(View v) {
+                if ((listTabLayout.getSelectedTabPosition() + 1) < (listTabStrip.getChildCount())){
+                String nextTabName = listTabStrip.getChildAt(listTabLayout.getSelectedTabPosition() + 1).getTooltipText().toString();
+                    SQLiteDatabaseHelper db = new SQLiteDatabaseHelper(MainActivity.this);
+                    int nextListId = db.getTaskListIdByName(nextTabName);
+                    Task task = TaskAdapter.selectedTask;
+                    task.setList_id(nextListId);
+                    db.editTask(task);
+
+                    Toast.makeText(MainActivity.this, task.getName(), Toast.LENGTH_SHORT).show();
+                }else
+                    Toast.makeText(MainActivity.this, "No List to the Right", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -101,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
+        SQLiteDatabaseHelper db = new SQLiteDatabaseHelper(this);
 
         Intent intent = getIntent();
         String email = intent.getStringExtra("email");
@@ -109,16 +160,8 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-
-/*        ArrayList<Task> tasks = initTasklist();
-        db.createTask(tasks.get(0));
-        db.createTask(tasks.get(1));
-        db.createTask(tasks.get(2));
-        db.createTask(tasks.get(3));*/
-/*        db.createTaskList(new TaskList("asdas1","asdqwe1","qweasd1", 1 ));
-        db.createTaskList(new TaskList("asdas2","asdqwe2","qweasd2", 1 ));
-        db.createTaskList(new TaskList("asdas3","asdqwe3","qweasd3", 1 ));
-        db.createTaskList(new TaskList("asdas4","asdqwe4","qweasd4", 1 ));*/
+        User user = new User("qwe","qwe","qwe","admin");
+        if(db.getAllUsers().isEmpty()) initTasklist();
 
         if (email == null){
             Intent intentlogin = new Intent(getApplicationContext(), LoginActivity.class);
@@ -173,13 +216,20 @@ public class MainActivity extends AppCompatActivity {
 */
 
     }
-    private ArrayList<Task> initTasklist(){
-        ArrayList<Task> taskList = new ArrayList<>();
-        taskList.add(new Task("Task 1", "Desc 1", 1));
-        taskList.add(new Task("Task 2", "Desc 2", 2));
-        taskList.add(new Task("Task 3", "Desc 3", 3));
-        taskList.add(new Task("Task 4", "Desc 4", 4));
-        return taskList;
+    private void initTasklist(){
+        SQLiteDatabaseHelper db = new SQLiteDatabaseHelper(this);
+        db.createTask(new Task("Task 1", "Desc 1", 1));
+        db.createTask(new Task("Task 2", "Desc 2", 2));
+        db.createTask(new Task("Task 3", "Desc 3", 3));
+        db.createTask(new Task("Task 4", "Desc 4", 4));
+
+        db.createTaskList(new TaskList("asdas1","asdqwe1","qweasd1", 1 ));
+        db.createTaskList(new TaskList("asdas2","asdqwe2","qweasd2", 1 ));
+        db.createTaskList(new TaskList("asdas3","asdqwe3","qweasd3", 1 ));
+        db.createTaskList(new TaskList("asdas4","asdqwe4","qweasd4", 1 ));
+
+        User user = new User("qwe","qwe","qwe","admin");
+        db.createUser(user);
     }
     public void openTaskFragment (Task task){ //Functie pentru deschiderea unui fragment editabil de detaliu al taskului
         FragmentTransaction fragmentTransaction =  getSupportFragmentManager().beginTransaction();
