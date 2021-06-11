@@ -17,19 +17,21 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder>{
+public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder> {
 
     private static final String TAG = "TaskAdapter";
 
     private final itemClickListener listener;
-
+    TaskRecyclerInterface mTaskListener;
     private Context mContext;
     private final List<Task> tasks;
 
-    public TaskAdapter(Context mContext, List<Task> tasks, itemClickListener listener) {
+
+    public TaskAdapter(Context mContext, List<Task> tasks, itemClickListener listener, TaskRecyclerInterface mTaskListener) {
         this.mContext = mContext;
         this.tasks = tasks;
         this.listener = listener;
+        this.mTaskListener = mTaskListener;
     }
 
     @NonNull
@@ -37,7 +39,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder>{
     @Override
     public ViewHolder onCreateViewHolder(@NonNull @NotNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_tasklistitem, parent, false);
-        ViewHolder holder = new ViewHolder(view);
+        ViewHolder holder = new ViewHolder(view, mTaskListener);
         return holder;
     }
 
@@ -48,10 +50,13 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder>{
         holder.taskName.setText(task.getName());
         holder.taskDescription.setText(task.getDescription());
 
+
         holder.parentTask_layout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
+               // tasks.remove(holder.getAbsoluteAdapterPosition());
+                //notifyItemRemoved(holder.getAbsoluteAdapterPosition());
             }
         });
         holder.parentTask_layout.setOnLongClickListener(new View.OnLongClickListener() {
@@ -75,19 +80,18 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder>{
         }
     }
 
-    public Task removeTaskItem(int position) {
-        final Task removedTask = tasks.remove(position);
-        notifyItemRemoved(position);
-        return removedTask;
-    }
+
+
     public class ViewHolder extends RecyclerView.ViewHolder{
 
        TextView taskName;
        TextView taskDescription;
        RelativeLayout parentTask_layout;
+        TaskRecyclerInterface mTaskListener;
 
-       public ViewHolder(@NonNull @NotNull View itemView) {
+       public ViewHolder(@NonNull @NotNull View itemView, TaskRecyclerInterface mTaskListener) {
            super(itemView);
+           this.mTaskListener = mTaskListener;
            taskName = itemView.findViewById(R.id.taskItemName);
            taskDescription = itemView.findViewById(R.id.taskItemDescription);
            parentTask_layout = itemView.findViewById(R.id.parentTask_layout);
@@ -95,6 +99,10 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder>{
    }
    public interface itemClickListener {
         void onItemClick(Task task);
-
    }
+
+    public interface TaskRecyclerInterface{
+        void saveTask();
+        void deleteTask(int position);
+    }
 }

@@ -8,7 +8,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+
+import org.jetbrains.annotations.NotNull;
 
 public class TaskFragmentDetail extends Fragment {
 
@@ -50,8 +53,10 @@ public class TaskFragmentDetail extends Fragment {
                 saveTask.setId(task.getId());
                 saveTask.setList_id(task.getList_id());
                 db.editTask(saveTask);
-                //((MainActivity) getActivity()).refreshListTasksLists(1);
-                //((MainActivity) getActivity()).refreshViewPager();
+                ((MainActivity) getActivity()).refreshTaskLists(1);
+                ((MainActivity) getActivity()).taskListAdapter.createFragment(((MainActivity) getActivity()).listTabLayout.getSelectedTabPosition());
+
+
                 getActivity().onBackPressed();
             }
         });
@@ -61,6 +66,7 @@ public class TaskFragmentDetail extends Fragment {
             public void onClick(View v) {
                 SQLiteDatabaseHelper db = new SQLiteDatabaseHelper(getContext());
                 db.deleteTask(task.id);
+                ((MainActivity) getActivity()).refreshTaskLists(1);
                 getActivity().onBackPressed();
             }
         });
@@ -69,5 +75,6 @@ public class TaskFragmentDetail extends Fragment {
         // Inflate the layout for this fragment
         return view;
     }
+
 
 }

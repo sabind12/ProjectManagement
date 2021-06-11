@@ -26,6 +26,13 @@ public class TaskListAdapter extends FragmentStateAdapter {
         this.taskLists = taskLists;
     }
 
+    public void updateLists(ArrayList<ArrayList<Task>> taskListsTasks, ArrayList<TaskList> taskLists){
+        this.taskListsTasks.clear();
+        this.taskLists.clear();
+        this.taskListsTasks.addAll(taskListsTasks);
+        this.taskLists.addAll(taskLists);
+        notifyDataSetChanged();
+    }
 
     @NonNull
     @NotNull

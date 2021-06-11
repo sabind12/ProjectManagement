@@ -26,26 +26,20 @@ public class MainActivity extends AppCompatActivity {
     ViewPager2 listViewPager2;
     TaskListAdapter taskListAdapter;
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+    protected void onStart() {
+        super.onStart();
 
         SQLiteDatabaseHelper db = new SQLiteDatabaseHelper(this);
-        ArrayList<ArrayList<Task>> taskListsTasks;
-        taskListsTasks = refreshListTasksLists(1);
-
-        Intent intent = getIntent();
-        String email = intent.getStringExtra("email");
-
-        ArrayList<TaskList> taskLists = (ArrayList<TaskList>) db.getAllTaskLists(1);
+        ArrayList<ArrayList<Task>> taskListsTasks = db.getAllTaskListsTasks(1);
+        ArrayList<TaskList> taskLists = db.getAllTaskLists(1);
         listTabLayout = findViewById(R.id.listTabLayout);
         listViewPager2 = findViewById(R.id.listViewPager2);
         FragmentManager fragmentManager = getSupportFragmentManager();
         taskListAdapter = new TaskListAdapter(fragmentManager, getLifecycle(), taskListsTasks, taskLists);
-        listViewPager2.setAdapter(taskListAdapter);
 
+        //taskListAdapter.createFragment(listViewPager2.getCurrentItem());
+        listViewPager2.setAdapter(taskListAdapter);
         for (int i = 0; i < taskLists.size(); i++) {
             listTabLayout.addTab(listTabLayout.newTab().setText(taskLists.get(i).name));
         }
@@ -99,17 +93,32 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, selectedTabName, Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
 
-        // ArrayList<Task> tasks = initTasklist();
-        //db.createTask(tasks.get(0));
-        //db.createTask(tasks.get(1));
-        //db.createTask(tasks.get(2));
-        //db.createTask(tasks.get(3));
-        //db.createTaskList(new TaskList("asdas1","asdqwe1","qweasd1", 1 ));
-        //db.createTaskList(new TaskList("asdas2","asdqwe2","qweasd2", 1 ));
-        //db.createTaskList(new TaskList("asdas3","asdqwe3","qweasd3", 1 ));
-        //db.createTaskList(new TaskList("asdas4","asdqwe4","qweasd4", 1 ));
+
+        Intent intent = getIntent();
+        String email = intent.getStringExtra("email");
+
+
+
+
+
+/*        ArrayList<Task> tasks = initTasklist();
+        db.createTask(tasks.get(0));
+        db.createTask(tasks.get(1));
+        db.createTask(tasks.get(2));
+        db.createTask(tasks.get(3));*/
+/*        db.createTaskList(new TaskList("asdas1","asdqwe1","qweasd1", 1 ));
+        db.createTaskList(new TaskList("asdas2","asdqwe2","qweasd2", 1 ));
+        db.createTaskList(new TaskList("asdas3","asdqwe3","qweasd3", 1 ));
+        db.createTaskList(new TaskList("asdas4","asdqwe4","qweasd4", 1 ));*/
 
         if (email == null){
             Intent intentlogin = new Intent(getApplicationContext(), LoginActivity.class);
@@ -164,7 +173,6 @@ public class MainActivity extends AppCompatActivity {
 */
 
     }
-/*
     private ArrayList<Task> initTasklist(){
         ArrayList<Task> taskList = new ArrayList<>();
         taskList.add(new Task("Task 1", "Desc 1", 1));
@@ -173,7 +181,6 @@ public class MainActivity extends AppCompatActivity {
         taskList.add(new Task("Task 4", "Desc 4", 4));
         return taskList;
     }
-*/
     public void openTaskFragment (Task task){ //Functie pentru deschiderea unui fragment editabil de detaliu al taskului
         FragmentTransaction fragmentTransaction =  getSupportFragmentManager().beginTransaction();
         fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
@@ -197,11 +204,13 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public ArrayList<ArrayList<Task>> refreshListTasksLists (int projectId){
+    public void refreshTaskLists (int projectId){
         SQLiteDatabaseHelper db = new SQLiteDatabaseHelper(this);
+        ArrayList<TaskList> taskLists;
+        taskLists = db.getAllTaskLists(projectId);
         ArrayList<ArrayList<Task>> taskListsTasks;
         taskListsTasks = db.getAllTaskListsTasks(projectId);
-        return taskListsTasks;
+        taskListAdapter.updateLists(taskListsTasks, taskLists);
     }
 
 //    public void refreshViewPager (){

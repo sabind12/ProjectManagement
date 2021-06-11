@@ -24,10 +24,11 @@ import java.util.ArrayList;
  * Use the {@link TaskListFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class TaskListFragment extends Fragment implements TaskAdapter.itemClickListener {
+public class TaskListFragment extends Fragment implements TaskAdapter.itemClickListener, TaskAdapter.TaskRecyclerInterface {
 
     private TaskAdapter mTaskAdapter;
-
+    private ArrayList<Task> taskArrayList;
+    RecyclerView taskRecyclerView;
 
     public TaskListFragment() {
         // Required empty public constructor
@@ -38,6 +39,16 @@ public class TaskListFragment extends Fragment implements TaskAdapter.itemClickL
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        taskArrayList = (ArrayList<Task>) getArguments().getSerializable("taskArray");
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
+        taskRecyclerView.setLayoutManager(layoutManager);
+        mTaskAdapter = new TaskAdapter( getContext(), taskArrayList, this, this);
+        taskRecyclerView.setAdapter(mTaskAdapter);
     }
 
     @Override
@@ -57,17 +68,24 @@ public class TaskListFragment extends Fragment implements TaskAdapter.itemClickL
     @Override
     public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        RecyclerView taskRecyclerView = view.findViewById(R.id.taskRecyclerView);
-        ArrayList<Task> taskArrayList = (ArrayList<Task>) getArguments().getSerializable("taskArray");
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
-        taskRecyclerView.setLayoutManager(layoutManager);
-        mTaskAdapter = new TaskAdapter( getContext(), taskArrayList, this);
-        taskRecyclerView.setAdapter(mTaskAdapter);
+        taskRecyclerView = view.findViewById(R.id.taskRecyclerView);
+
     }
 
     @Override
     public void onItemClick(Task task) {
         ((MainActivity) getActivity()).openTaskFragment(task);  //apelarea functiei din MainActivity pentru a deschide un fragment de detaliu editabil al taskului
 
+    }
+
+    @Override
+    public void saveTask() {
+
+    }
+
+    @Override
+    public void deleteTask(int position) {
+        //taskArrayList.remove(position);
+        //mTaskAdapter.notifyItemRemoved(position);
     }
 }
