@@ -109,6 +109,11 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String selectedTabName = listTabStrip.getChildAt(listTabLayout.getSelectedTabPosition()).getTooltipText().toString();
                 Toast.makeText(MainActivity.this, selectedTabName, Toast.LENGTH_SHORT).show();
+                SQLiteDatabaseHelper db = new SQLiteDatabaseHelper(MainActivity.this);
+                int selectedListId = db.getTaskListIdByName(selectedTabName);
+                TaskList newTaskList = new TaskList("Task List Name", "Task List Description", "Task List Icon", 1);
+                int newTaskListId = (int)db.insertTaskList(selectedListId, newTaskList);
+                openTaskListFragment(newTaskListId);
             }
         });
         findViewById(R.id.buttonNewTask).setOnClickListener(new View.OnClickListener() {
