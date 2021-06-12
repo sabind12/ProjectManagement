@@ -58,7 +58,7 @@ public class TaskListDetailFragment extends Fragment {
                 //TaskList saveTaskList = new TaskList();
                 //saveTaskList= taskList;
                 taskList.setName(view.<EditText>findViewById(R.id.taskListDetailEditTextName).getText().toString());
-                taskList.setDescription(view.<EditText>findViewById(R.id.taskListDetailEditTextName).getText().toString());
+                taskList.setDescription(view.<EditText>findViewById(R.id.taskListDetailEditTextDescription).getText().toString());
                 db.editTaskList(taskList);
                 getActivity().onBackPressed();
             }
