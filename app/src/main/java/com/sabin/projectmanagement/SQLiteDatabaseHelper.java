@@ -553,33 +553,39 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
 
     public int insertTaskList(int currentTaskListId, TaskList newTaskList){
         ArrayList<TaskList> taskList = getAllTaskLists(1);
+        int dbtaskListSize = taskList.size();
         ArrayList<Task> listTasks = new ArrayList<>();
         taskList.add(currentTaskListId-1, newTaskList);
-        for (int i = currentTaskListId; i <= taskList.size(); i++) {
+        for (int i = taskList.size(); i >= currentTaskListId; i--) {
             listTasks.clear();
             listTasks = getListTasks(i);
             for (int j = 0; j < listTasks.size(); j++) {
-                listTasks.get(j).setList_id(i+1);
+                listTasks.get(j).setList_id(listTasks.get(j).getList_id()+1);
                 editTask(listTasks.get(j));
             }
             TaskList currentElement = new TaskList();
-            currentElement =taskList.get(taskList.size()+currentTaskListId-i-1);
-            currentElement.setId(taskList.size()+currentTaskListId-i);
-            createTaskList(newTaskList);
-            SQLiteDatabase db = this.getWritableDatabase();
-            db = this.getWritableDatabase();
+            currentElement=taskList.get(i-1);
+            currentElement.setId(i);
             ContentValues values = new ContentValues();
             values.put(COLUMN_LIST_ID, currentElement.getId());
             values.put(COLUMN_LIST_NAME, currentElement.getName());
             values.put(COLUMN_LIST_DESCRIPTION, currentElement.getDescription());
             values.put(COLUMN_LIST_ICON, currentElement.getIcon());
             values.put(COLUMN_LIST_PROJECT_ID, currentElement.getProject_id());
-            db.update(TABLE_LIST, values, COLUMN_LIST_ID + " = ?", new String[]{String.valueOf(currentElement.getId())});
-            db.close();
+            if (taskList.size() > dbtaskListSize) {
+                dbtaskListSize++;
+                SQLiteDatabase db = this.getWritableDatabase();
+                db.insert(TABLE_LIST, null, values);
+                db.close();
+            }else {
+                SQLiteDatabase db = this.getWritableDatabase();
+                db.update(TABLE_LIST, values, COLUMN_LIST_ID + " = ?", new String[]{String.valueOf(currentElement.getId())});
+                db.close();
+            }
         }
 
         SQLiteDatabase db = this.getWritableDatabase();
-        db = this.getWritableDatabase();
+
         ContentValues values = new ContentValues();
         values.put(COLUMN_LIST_ID, taskList.get(currentTaskListId-1).getId());
         values.put(COLUMN_LIST_NAME, taskList.get(currentTaskListId-1).getName());
