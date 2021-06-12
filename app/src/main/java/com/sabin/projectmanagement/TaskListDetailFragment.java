@@ -9,12 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link TaskListDetailFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class TaskListDetailFragment extends Fragment {
+public class TaskListDetailFragment extends Fragment {              //fragment pentru modificarea unei liste de Task-uri
 
     private static final String ARG_TaskListId = "taskListId";
 
@@ -26,7 +21,7 @@ public class TaskListDetailFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static TaskListDetailFragment newInstance(int taskListId) {
+    public static TaskListDetailFragment newInstance(int taskListId) {          //crearea unei instante noi a fragmentului
         TaskListDetailFragment fragment = new TaskListDetailFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_TaskListId, taskListId);
@@ -51,18 +46,18 @@ public class TaskListDetailFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_task_list_detail, container, false);
         view.<EditText>findViewById(R.id.taskListDetailEditTextName).setText(taskList.name);
         view.<EditText>findViewById(R.id.taskListDetailEditTextDescription).setText(taskList.description);
+        //buton pentru salvarea listei de Task-uri editata
         view.findViewById(R.id.taskListDetailSaveButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 SQLiteDatabaseHelper db = new SQLiteDatabaseHelper(getContext());
-                //TaskList saveTaskList = new TaskList();
-                //saveTaskList= taskList;
                 taskList.setName(view.<EditText>findViewById(R.id.taskListDetailEditTextName).getText().toString());
                 taskList.setDescription(view.<EditText>findViewById(R.id.taskListDetailEditTextDescription).getText().toString());
                 db.editTaskList(taskList);
                 getActivity().onBackPressed();
             }
         });
+        //buton pentru stergerea listei de Task-uri si a Task-urilor din lista
         view.findViewById(R.id.taskListDetailDeleteButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -15,11 +15,11 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 
 
-public class TaskListAdapter extends FragmentStateAdapter {
+public class TaskListAdapter extends FragmentStateAdapter {             //adaptor pentru fragmentele din ViewPager
 
     private ArrayList<ArrayList<Task>> taskListsTasks;
     private ArrayList<TaskList> taskLists;
-
+                                                                        //primirea parametrilor cu liste de liste de Task-uri si lista de Task-uri a fiecarei liste
     public TaskListAdapter(@NonNull @NotNull FragmentManager fragmentManager, @NonNull @NotNull Lifecycle lifecycle, ArrayList<ArrayList<Task>> taskListsTasks, ArrayList<TaskList> taskLists) {
         super(fragmentManager, lifecycle);
         this.taskListsTasks = taskListsTasks;
@@ -37,14 +37,14 @@ public class TaskListAdapter extends FragmentStateAdapter {
     @NonNull
     @NotNull
     @Override
-    public Fragment createFragment(int position) {
+    public Fragment createFragment(int position) {                  //crearea unui fragment
         //TaskFragment taskListFragment = new TaskFragment();
        TaskListFragment taskListFragment =  new TaskListFragment();
        // SQLiteDatabaseHelper db = new SQLiteDatabaseHelper(taskListFragment.getContext());
         //ArrayList<Task> listTaskArr;
         //listTaskArr = (ArrayList<Task>) db.getListTasks(1);
         Bundle listTaskBundle = new Bundle();
-        if (taskListsTasks.size() > position)
+        if (taskListsTasks.size() > position)                       //trimiterea datelor listei si a listei de Task-uri catre fragment prin argumente
         listTaskBundle.putSerializable("taskArray",taskListsTasks.get(position));
         else
             listTaskBundle.putSerializable("taskArray",new ArrayList<ArrayList<Task>>());
@@ -53,7 +53,7 @@ public class TaskListAdapter extends FragmentStateAdapter {
     }
 
     @Override
-    public int getItemCount() {
+    public int getItemCount() {         //setarea numarului de liste de Task-uri
         return taskLists.size();
     }
 }

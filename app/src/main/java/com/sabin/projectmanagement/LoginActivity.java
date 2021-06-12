@@ -9,7 +9,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity {          //Activitate pentru autentificare sau acesul activitatii de inregistrare
 
     EditText emailLogin;
     EditText passwordLogin;
@@ -20,31 +20,29 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
-
+        setContentView(R.layout.activity_login);            //Accesarea elementelor desenate din activity_login.xml
         emailLogin = (EditText) findViewById(R.id.emailAddressLoginEditText);
         passwordLogin = (EditText) findViewById(R.id.passwordLoginEditText) ;
         loginButton = (Button) findViewById(R.id.buttonLogin);
         registerButton = (Button) findViewById(R.id.buttonRegister);
         db = new SQLiteDatabaseHelper(this);
-
-        loginButton.setOnClickListener(new View.OnClickListener() {
+        loginButton.setOnClickListener(new View.OnClickListener() {     //Buton pentru autentificarea utilizatorului
             @Override
             public void onClick(View v) {
                 String email = emailLogin.getText().toString();
                 String password = passwordLogin.getText().toString();
-                if (email.equals("") || password.equals(""))
+                if (email.equals("") || password.equals(""))    //Verificarea prezentei textului in ambele campuri
                     Toast.makeText(LoginActivity.this, "Please fill all fields!", Toast.LENGTH_LONG).show();
                 else {
                     int checkuser = db.checkIsUserEmail(email);
-                    if(checkuser < 1){
+                    if(checkuser < 1){                          //Verificarea existentei adresei mail
                         Toast.makeText(LoginActivity.this, "Email address not registered!", Toast.LENGTH_LONG).show();
                     }else {
                         int checkUserPass = db.checkUserEmailPassCombo(email, password);
-                        if (checkUserPass > -1){
+                        if (checkUserPass > -1){                 //Verificarea combinatiei user + parola
                             Intent intent =new Intent(getApplicationContext(), MainActivity.class);
                             intent.putExtra("email", email);
-                            //finish();
+                            //finish();                           //Intoarcerea in activitatea principala
                             startActivity(intent);
                         }else
                             Toast.makeText(LoginActivity.this, "Email password combination incorrect", Toast.LENGTH_LONG).show();
@@ -55,7 +53,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        registerButton.setOnClickListener(new View.OnClickListener() {
+        registerButton.setOnClickListener(new View.OnClickListener() {               //Buton pentru accesul activitatii de creare user
             @Override
             public void onClick(View v) {
 

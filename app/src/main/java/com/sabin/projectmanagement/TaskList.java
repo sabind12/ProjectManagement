@@ -1,6 +1,6 @@
 package com.sabin.projectmanagement;
 
-public class TaskList {
+public class TaskList {         //Clasa model pentru lista de Task-uri
 
     int id;
     String name;

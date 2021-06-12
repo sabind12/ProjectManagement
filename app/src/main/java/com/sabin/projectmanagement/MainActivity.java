@@ -20,7 +20,7 @@ import com.google.android.material.tabs.TabLayout;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity {           //Activitatea principala a aplicatiei
 
     TabLayout listTabLayout;
     ViewPager2 listViewPager2;
@@ -31,21 +31,19 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        SQLiteDatabaseHelper db = new SQLiteDatabaseHelper(this);
+        SQLiteDatabaseHelper db = new SQLiteDatabaseHelper(this);               //Citirea Task-urilor pe liste si a listelor
         ArrayList<ArrayList<Task>> taskListsTasks = db.getAllTaskListsTasks(1);
         ArrayList<TaskList> taskLists = db.getAllTaskLists(1);
-        listTabLayout = findViewById(R.id.listTabLayout);
+        listTabLayout = findViewById(R.id.listTabLayout);                               //Configurarea ViewPager-ului
         listViewPager2 = findViewById(R.id.listViewPager2);
         FragmentManager fragmentManager = getSupportFragmentManager();
-        taskListAdapter = new TaskListAdapter(fragmentManager, getLifecycle(), taskListsTasks, taskLists);
-
-        //taskListAdapter.createFragment(listViewPager2.getCurrentItem());
+        taskListAdapter = new TaskListAdapter(fragmentManager, getLifecycle(), taskListsTasks, taskLists);      //crearea ViewPager-ului
         listViewPager2.setAdapter(taskListAdapter);
-        for (int i = 0; i < taskLists.size(); i++) {
+        for (int i = 0; i < taskLists.size(); i++) {                                    //popularea Tab-urilor de deasupra ViewPager-ului
             listTabLayout.addTab(listTabLayout.newTab().setText(taskLists.get(i).name));
         }
 
-        listTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+        listTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {      //Selectarea paginii corespunzatoare la apasarea pe Tab
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 listViewPager2.setCurrentItem(tab.getPosition());
@@ -63,15 +61,14 @@ public class MainActivity extends AppCompatActivity {
         });
         listViewPager2.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
-            public void onPageSelected(int position) {
+            public void onPageSelected(int position) {          //selectarea Tab-ului corespunzator la schimbarea paginii
                 listTabLayout.selectTab(listTabLayout.getTabAt(position));
             }
         });
 
-        LinearLayout listTabStrip = (LinearLayout) listTabLayout.getChildAt(0);
+        LinearLayout listTabStrip = (LinearLayout) listTabLayout.getChildAt(0);     //setarea OnLongClickListener pe fiecare Tab pentru editarea listei
         for (int i = 0; i < listTabStrip.getChildCount(); i++) {
             View currentChild = listTabStrip.getChildAt(i);
-            // Set LongClick listener to each Tab
             currentChild.setOnLongClickListener(new View.OnLongClickListener() {
                 @RequiresApi(api = Build.VERSION_CODES.O)
                 @Override
@@ -87,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
             });
         }
 
-        findViewById(R.id.buttonMoveTaskLeft).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.buttonMoveTaskLeft).setOnClickListener(new View.OnClickListener() {       //buton pentru mutarea unui Task in lista de la stanga
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View v) {
@@ -103,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "No List to the Left", Toast.LENGTH_SHORT).show();
             }
         });
-        findViewById(R.id.buttonNewList).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.buttonNewList).setOnClickListener(new View.OnClickListener() {            //buton pentru creerea si editarea unei liste noi
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View v) {
@@ -116,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
                 openTaskListFragment(newTaskListId);
             }
         });
-        findViewById(R.id.buttonNewTask).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.buttonNewTask).setOnClickListener(new View.OnClickListener() {            //buton pentru creerea si editarea unui Task nou
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View v) {
@@ -132,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
                 // int selectedListId = db.getTaskListIdByName(selectedTabName);
             }
         });
-        findViewById(R.id.buttonMoveTaskRight).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.buttonMoveTaskRight).setOnClickListener(new View.OnClickListener() {      //buton pentru mutarea unui Task in lista de la dreapta
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View v) {
@@ -158,70 +155,19 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         SQLiteDatabaseHelper db = new SQLiteDatabaseHelper(this);
-
-        Intent intent = getIntent();
+        Intent intent = getIntent();                        //primirea utilizatorului autentificat din activitatile de autentificare sau inregistrare
         String email = intent.getStringExtra("email");
 
+        if(db.getAllUsers().isEmpty()) initTasklist();      //popularea utilizator liste si Task-uri cu date de proba daca nu exista utilizatori
 
-
-
-        User user = new User("qwe","qwe","qwe","admin");
-        if(db.getAllUsers().isEmpty()) initTasklist();
-
-        if (email == null){
+        if (email == null){                                 //lansarea activitatii de autentificare daca nu exista utilizator autentificat
             Intent intentlogin = new Intent(getApplicationContext(), LoginActivity.class);
             startActivity(intentlogin);
         }
 
 
-
-
-        //getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).replace(R.id.flFragmentTask, taskFragment, null).commit();
-/*
-        findViewById(R.id.btnFragment1).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                TaskListFragment fragmentTaskList = new TaskListFragment();
-                ArrayList<Task> tasklist =tasks;
-                Bundle taskFragmentBundle = new Bundle();
-                taskFragmentBundle.putSerializable("taskArray", tasklist);
-                fragmentTaskList.setArguments(taskFragmentBundle);
-                fragmentTransaction.replace(R.id.flFragmentTask, fragmentTaskList);
-                fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.commit();
-                //getSupportFragmentManager().beginTransaction().replace(R.id.flFragmentTask, taskFragment).commit();
-            }
-        });
-
-        Role admin = new Role("admin", true, true, true, true, true, true, true, true, true);
-
-        findViewById(R.id.btnFragment2).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getSupportFragmentManager().beginTransaction().replace(R.id.flFragmentTask, taskFragment2).addToBackStack(null).commit();
-                SQLiteDatabaseHelper dbHelperRead = new SQLiteDatabaseHelper(MainActivity.this);
-                //List<Role> allRoleList = dbHelperRead.getAllRoles();
-                //Role returnRole = dbHelperRead.getRole("admin");
-                //Toast.makeText(MainActivity.this, allRoleList.toString(), Toast.LENGTH_LONG).show();
-                //Toast.makeText(MainActivity.this, returnRole.toString(), Toast.LENGTH_LONG).show();
-                Toast.makeText(MainActivity.this, String.valueOf(dbHelperRead.editRole(admin)), Toast.LENGTH_LONG).show();
-                //Toast.makeText(MainActivity.this, String.valueOf(dbHelperRead.checkIsRole("admin")), Toast.LENGTH_LONG).show();
-
-            }
-        });
-
-
-
-            SQLiteDatabaseHelper dbHelper = new SQLiteDatabaseHelper(MainActivity.this);
-        //boolean role = dbHelper.createRole(admin);
-        //Toast.makeText(MainActivity.this, "Role written to db successfully", Toast.LENGTH_LONG).show();
-*/
-
     }
-    private void initTasklist(){
+    private void initTasklist(){        //functie pentru popularea utilizator liste si Task-uri cu date de proba daca nu exista utilizatori
         SQLiteDatabaseHelper db = new SQLiteDatabaseHelper(this);
         db.createTask(new Task("Task 1", "Desc 1", 1));
         db.createTask(new Task("Task 2", "Desc 2", 2));
@@ -233,7 +179,7 @@ public class MainActivity extends AppCompatActivity {
         db.createTaskList(new TaskList("asdas3","asdqwe3","qweasd3", 1 ));
         db.createTaskList(new TaskList("asdas4","asdqwe4","qweasd4", 1 ));
 
-        User user = new User("qwe","qwe","qwe","admin");
+        User user = new User("qwe","qwe","qwe","admin");            //crearea unui utilizator admin
         db.createUser(user);
     }
     public void openTaskFragment (Task task){ //Functie pentru deschiderea unui fragment editabil de detaliu al taskului
@@ -259,7 +205,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void refreshTaskLists (int projectId){
+    public void refreshTaskLists (int projectId){       //functie pentru recitirea listelor de Task-uri
         SQLiteDatabaseHelper db = new SQLiteDatabaseHelper(this);
         ArrayList<TaskList> taskLists;
         taskLists = db.getAllTaskLists(projectId);

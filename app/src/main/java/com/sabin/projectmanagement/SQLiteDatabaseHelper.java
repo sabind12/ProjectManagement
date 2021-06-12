@@ -14,9 +14,10 @@ import androidx.annotation.RequiresApi;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
+public class SQLiteDatabaseHelper extends SQLiteOpenHelper {            //clasa pentru citirea si scrierea in baza de date SQLite
     public static final String LOG = "DBHelper"; //Tag pentru inregistrare loguri
     public static final String DB_NAME = "project.db"; //Nume baza de date
+                                                                        //crearea variabilelor String pentru numele tabalelor si coloanelor din baza de date
     //Definire variabile nume tabel roluri utilizatori si nume coloane tabel roluri/drepturi utilizatori
     public static final String TABLE_ROLE = "role";
         public static final String COLUMN_ROLE_ID = "role_id";
@@ -46,20 +47,20 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
         public static final String COLUMN_PROJECT_DEADLINE = "project_deadline";
         public static final String COLUMN_PROJECT_CREATEDBYUSERID = "project_createdbyuserid";
         public static final String COLUMN_PROJECT_SHAREDTOUSERID = "project_sharedtouserid";
-
+    //Definire variabile nume tabel lista task-uri si nume coloane tabel lista task-uri
     public static final String TABLE_LIST = "list";
         public static final String COLUMN_LIST_ID = "list_id";
         public static final String COLUMN_LIST_NAME = "list_name";
         public static final String COLUMN_LIST_DESCRIPTION = "list_description";
         public static final String COLUMN_LIST_ICON = "list_icon";
         public static final String COLUMN_LIST_PROJECT_ID = "list_project_id";
-
+    //Definire variabile nume tabel task-uri si nume coloane tabel task-uri
     public static final String TABLE_TASK = "task";
         public static final String COLUMN_TASK_ID = "task_id";
         public static final String COLUMN_TASK_NAME = "task_name";
         public static final String COLUMN_TASK_DESCRIPTION = "task_description";
         public static final String COLUMN_TASK_LIST_ID = "task_list_id";
-
+    //Crearea query-urilor in variabile String pentru creerea initiala a tabelelor din baza de date
     public static final String CREATE_TABLE_USER = "CREATE TABLE " + TABLE_USER + " (" + COLUMN_USER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + COLUMN_USER_NAME + " VARCHAR(255) , " + COLUMN_USER_EMAIL + " VARCHAR(255) , " + COLUMN_USER_PASSWORD + " VARCHAR(255) , " + COLUMN_USER_ROLE + " VARCHAR(255));";
     public static final String CREATE_TABLE_ROLE = "CREATE TABLE " + TABLE_ROLE + " (" + COLUMN_ROLE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -82,7 +83,7 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
     }
 
     @Override
-    public void onCreate(SQLiteDatabase db) {
+    public void onCreate(SQLiteDatabase db) {       //creerea initiala a bazei de date si a tabelelor
 
         try {
             db.beginTransaction();
@@ -101,7 +102,7 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {      //procedura de upgrade a bazei de date
         if (oldVersion>=newVersion)
             return;
         db.execSQL("DROP TABLE IF EXISTS "+TABLE_USER);
@@ -111,7 +112,7 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS "+TABLE_TASK);
         onCreate(db);
     }
-
+                                                                                    //funcii pentru diferite tipuri de accesari in fiecare tabel
     public boolean createRole(@org.jetbrains.annotations.NotNull Role role){ //adaugarea unui nou rol
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -134,7 +135,7 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    public Role getRole(String roleName){
+    public Role getRole(String roleName){                               //returnarea unui singur rol
         SQLiteDatabase db =this.getReadableDatabase();
         String queryRole = "SELECT * FROM " + TABLE_ROLE + " WHERE " + COLUMN_ROLE_NAME + " = '" + roleName + "';";
 
@@ -164,7 +165,7 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
     }
 
 
-    public ArrayList<Role> getAllRoles(){
+    public ArrayList<Role> getAllRoles(){                       //returnarea tuturor rolurilor
         ArrayList<Role> returnAllRoles = new ArrayList<>();
         String queryGetAllRoles = "SELECT * FROM " + TABLE_ROLE + ";";
 
@@ -197,7 +198,7 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
         return returnAllRoles;
     }
 
-    public int checkIsRole(String roleName){
+    public int checkIsRole(String roleName){                    //verificarea existentei unui rol
         SQLiteDatabase db = this.getReadableDatabase();
         String queryCheckRole = "SELECT " + COLUMN_ROLE_ID + ", " + COLUMN_ROLE_NAME + " FROM " + TABLE_ROLE + ";";
         Cursor cursor = db.rawQuery(queryCheckRole, null);
@@ -214,7 +215,7 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
         return -1;
     }
 
-    public int editRole(Role role){
+    public int editRole(Role role){                     //editarea unui rol
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COLUMN_ROLE_NAME, role.getName());
@@ -234,7 +235,7 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
         return returnedRoleId;
     }
 
-    public int deleteRole(String roleName){
+    public int deleteRole(String roleName){                     //stergerea unui rol
         SQLiteDatabase db = this.getWritableDatabase();
         int roleCheck = checkIsRole(roleName);
         if (roleCheck == -1) {
@@ -244,7 +245,7 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
 
     }
 
-    public int checkIsUserEmail(String email){
+    public int checkIsUserEmail(String email){                  //verificarea existentei unui mail
         SQLiteDatabase db =this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_USER + " WHERE " + COLUMN_USER_EMAIL + " = ?", new String[]{email});
         int userNumber = cursor.getCount();
@@ -253,7 +254,7 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
         return userNumber;
     }
 
-    public int checkUserEmailPassCombo(String email, String password){
+    public int checkUserEmailPassCombo(String email, String password){          //verificarea combinatiei user/parola
         SQLiteDatabase db =this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_USER + " WHERE " + COLUMN_USER_EMAIL + " = ?", new String[]{email});
         int userId = -1;
@@ -269,7 +270,7 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
         return userId;
     }
 
-    public int editUser(User user){
+    public int editUser(User user){                                         //editarea unui utilizator
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COLUMN_USER_NAME, user.getName());
@@ -281,7 +282,7 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
         return editResult;
     }
 
-    public long createUser(User user){
+    public long createUser(User user){                  //crearea unui utilizator
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COLUMN_USER_NAME, user.getName());
@@ -294,7 +295,7 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
         return createResult;
     }
 
-    public User getUser(int userId){
+    public User getUser(int userId){                    //returnarea unui utilizator
         SQLiteDatabase db = getReadableDatabase();
         String queryGetUser = "SELECT * FROM " + TABLE_USER + " WHERE " + COLUMN_USER_ID + " = " + userId;
         Cursor cursor = db.rawQuery(queryGetUser, null);
@@ -312,7 +313,7 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
         return user;
     }
 
-    public int getUserId(String email){
+    public int getUserId(String email){                     //returnarea id-ului unui utilizator folosind email-ul
         SQLiteDatabase db = getReadableDatabase();
         String queryGetUserID = "SELECT * FROM " + TABLE_USER +  " WHERE " + COLUMN_USER_EMAIL + " = " + email;
         Cursor cursor = db.rawQuery(queryGetUserID, null);
@@ -322,7 +323,7 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
         return userId;
     }
 
-    public ArrayList<User> getAllUsers(){
+    public ArrayList<User> getAllUsers(){                   //returnarea tuturor utilizatorilor
         ArrayList<User> allUsers = new ArrayList<User>();
         String queryGetAllUsers = "SELECT * FROM " + TABLE_USER;
         Log.e(LOG, queryGetAllUsers);
@@ -344,14 +345,14 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
         return allUsers;
     }
 
-    public int deleteUser(int userId){
+    public int deleteUser(int userId){                              //stergerea unui utilizator
         SQLiteDatabase db = getWritableDatabase();
         int deletedUserId = db.delete(TABLE_USER, COLUMN_USER_ID + " = ?", new String[]{String.valueOf(userId)});
         db.close();
         return deletedUserId;
     }
 
-    public long createProject(Project project){
+    public long createProject(Project project){                     //crearea unui proiect
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COLUMN_PROJECT_NAME, project.getName());
@@ -365,7 +366,7 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
         return projectId;
     }
 
-    public Project getProject(int projectId){
+    public Project getProject(int projectId){                       //returnarea unui proiect
         SQLiteDatabase db = this.getReadableDatabase();
         String queryGetProject = "SELECT * FROM " + TABLE_PROJECT + " WHERE " + COLUMN_PROJECT_ID + " = " + projectId + " ;";
         Cursor cursor = db.rawQuery(queryGetProject, null);
@@ -384,7 +385,7 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
         return project;
     }
 
-    public ArrayList<Project> getAllProjects(){
+    public ArrayList<Project> getAllProjects(){                 //returnarea tuturor proiectelor
         ArrayList<Project> allProjects = new ArrayList<Project>();
         String querygetAllProjects = "SELECT * FROM " + TABLE_PROJECT + " ;";
         SQLiteDatabase db = this.getReadableDatabase();
@@ -407,7 +408,7 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
         return allProjects;
     }
 
-    public int editProject (Project project){
+    public int editProject (Project project){                           //editarea unui proiect
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COLUMN_PROJECT_NAME, project.getName());
@@ -421,14 +422,14 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
         return projectId;
     }
 
-    public int deleteProject (Project project){
+    public int deleteProject (Project project){                         //stergerea unui proiect
         SQLiteDatabase db = this.getWritableDatabase();
         int deletedid = db.delete(TABLE_PROJECT, COLUMN_PROJECT_ID + " = ? ", new String[]{String.valueOf(project.getId())});
         db.close();
         return deletedid;
     }
 
-    public ArrayList<ArrayList<Task>> getAllTaskListsTasks(int projectID){
+    public ArrayList<ArrayList<Task>> getAllTaskListsTasks(int projectID){          //returnarea tuturor Task-urilor in cate un ArrayList pentru fiecare lista de Task-uri
         ArrayList<ArrayList<Task>> projectLists = new ArrayList<>();
         ArrayList<Integer> listIds = new ArrayList<>();
         ArrayList<TaskList> lists = (ArrayList<TaskList>) getAllTaskLists(projectID);
@@ -443,7 +444,7 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
         return projectLists;
     }
 
-    public long createTaskList (TaskList taskList){
+    public long createTaskList (TaskList taskList){                     //crearea unei liste de Task-uri
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COLUMN_LIST_NAME, taskList.getName());
@@ -455,7 +456,7 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
         return taskListId;
     }
 
-    public TaskList getTaskList ( int taskListId){
+    public TaskList getTaskList ( int taskListId){                      //returnarea unei liste de Task-uri
         SQLiteDatabase db = this.getReadableDatabase();
         String queryGetTaskList = "SELECT * FROM " + TABLE_LIST + " WHERE " + COLUMN_LIST_ID + " = " + taskListId + " ;";
         Cursor cursor = db.rawQuery(queryGetTaskList,null);
@@ -472,7 +473,7 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
         return taskList;
     }
 
-    public int getTaskListIdByName (String taskListName){
+    public int getTaskListIdByName (String taskListName){               //returnarea unei liste de Task-uri avand numele listei
         SQLiteDatabase db = getReadableDatabase();
         String queryGetTaskListIdByName = "SELECT " + COLUMN_LIST_ID + " FROM " + TABLE_LIST + " WHERE " + COLUMN_LIST_NAME + " = '" + taskListName + "' ;";
         Cursor cursor = db.rawQuery(queryGetTaskListIdByName, null);
@@ -484,7 +485,7 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
         return taskListId;
     }
 
-    public ArrayList<TaskList> getAllTaskLists (int projectId){
+    public ArrayList<TaskList> getAllTaskLists (int projectId){         //returnarea tuturor listelor de Task-uri
         ArrayList<TaskList> taskLists = new ArrayList<>();
         String queryGetAllTaskLists = "SELECT * FROM " + TABLE_LIST + " WHERE " + COLUMN_LIST_PROJECT_ID + " = " + projectId + " ;";
         SQLiteDatabase db = this.getReadableDatabase();
@@ -505,7 +506,7 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
         return taskLists;
     }
 
-    public int editTaskList(TaskList taskList) {
+    public int editTaskList(TaskList taskList) {                    //modificarea unei liste de Task-uri
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COLUMN_LIST_NAME, taskList.getName());
@@ -517,7 +518,7 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
         return taskListId;
     }
 
-    public int deleteTaskList(int taskListId){
+    public int deleteTaskList(int taskListId){                      //stergerea unei liste de Task-uri si mutarea celor ramase spre inceputul tabelului
         ArrayList<TaskList> taskList = getAllTaskLists(1);
         ArrayList<Task> listTasks;
         listTasks = getListTasks(taskListId);
@@ -531,11 +532,11 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
         for (int i = taskListId; i <= taskList.size(); i++) {
             listTasks.clear();
             listTasks = getListTasks(i+1);
-            for (int j = 0; j < listTasks.size(); j++) {
+            for (int j = 0; j < listTasks.size(); j++) {              //schimbarea id-urilor Task-urilor
                 listTasks.get(j).setList_id(i);
                 editTask(listTasks.get(j));
             }
-            taskList.get(i-1).setId(i);
+            taskList.get(i-1).setId(i);                                 //schimbarea id-urilor listelor de Task-uri
 
             db = this.getWritableDatabase();
             ContentValues values = new ContentValues();
@@ -551,12 +552,12 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
         return taskDeleted;
     }
 
-    public int insertTaskList(int currentTaskListId, TaskList newTaskList){
+    public int insertTaskList(int currentTaskListId, TaskList newTaskList){             //inserarea unei liste goale la pozitia curenta
         ArrayList<TaskList> taskList = getAllTaskLists(1);
         int dbtaskListSize = taskList.size();
         ArrayList<Task> listTasks = new ArrayList<>();
         taskList.add(currentTaskListId-1, newTaskList);
-        for (int i = taskList.size(); i >= currentTaskListId; i--) {
+        for (int i = taskList.size(); i >= currentTaskListId; i--) {                    //mutarea tutror Task-urilor si listelor de Task-uri spre sfarsit
             listTasks.clear();
             listTasks = getListTasks(i);
             for (int j = 0; j < listTasks.size(); j++) {
@@ -583,22 +584,11 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
                 db.close();
             }
         }
-
-        SQLiteDatabase db = this.getWritableDatabase();
-
-        ContentValues values = new ContentValues();
-        values.put(COLUMN_LIST_ID, taskList.get(currentTaskListId-1).getId());
-        values.put(COLUMN_LIST_NAME, taskList.get(currentTaskListId-1).getName());
-        values.put(COLUMN_LIST_DESCRIPTION, taskList.get(currentTaskListId-1).getDescription());
-        values.put(COLUMN_LIST_ICON, taskList.get(currentTaskListId-1).getIcon());
-        values.put(COLUMN_LIST_PROJECT_ID, taskList.get(currentTaskListId-1).getProject_id());
-        db.update(TABLE_LIST, values, COLUMN_LIST_ID + " = ?", new String[]{String.valueOf(taskList.get(currentTaskListId-1).getId())});
-        db.close();
         int insertedTaskListId = taskList.get(currentTaskListId-1).getId();
         return insertedTaskListId;
     }
 
-    public long createTask(Task task){
+    public long createTask(Task task){                  //crearea unui task
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COLUMN_TASK_NAME, task.getName());
@@ -608,7 +598,7 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return taskId;
     }
-    public Task getTask(int taskId){
+    public Task getTask(int taskId){                    //returnarea unui task
         String queryGetTask = "SELECT * FROM " + TABLE_TASK + " WHERE " + COLUMN_TASK_ID + " = " + taskId + ";";
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(queryGetTask, null);
@@ -624,7 +614,7 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
         return task;
     }
 
-    public ArrayList<Task> getAllTasks(){
+    public ArrayList<Task> getAllTasks(){               //returnarea tuturor Task-urilor
         ArrayList<Task> allTasks = new ArrayList<>();
         String queryGetAllTasks = "SELECT * FROM " + TABLE_TASK + ";";
         SQLiteDatabase db = this.getReadableDatabase();
@@ -644,7 +634,7 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
         return allTasks;
     }
 
-    public ArrayList<Task> getListTasks(int listId){
+    public ArrayList<Task> getListTasks(int listId){                    //returnarea tuturor Task-urilor unei liste
         ArrayList<Task> listTasks = new ArrayList<>();
         String queryGetAllTasks = "SELECT * FROM " + TABLE_TASK + " WHERE " + COLUMN_TASK_LIST_ID + " = " + listId + ";";
         SQLiteDatabase db = this.getReadableDatabase();
@@ -664,7 +654,7 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
         return listTasks;
     }
 
-    public int editTask(Task task){
+    public int editTask(Task task){                     //modificarea unui Task
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COLUMN_TASK_NAME, task.getName());
@@ -675,7 +665,7 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
         return taskId;
     }
 
-    public int deleteTask(int taskId){
+    public int deleteTask(int taskId){                  //Stergerea unui Task
         SQLiteDatabase db = getWritableDatabase();
         int deletedTaskId = db.delete(TABLE_TASK,COLUMN_TASK_ID + " = ?", new String[]{String.valueOf(taskId)} );
         db.close();

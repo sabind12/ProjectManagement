@@ -13,7 +13,7 @@ import androidx.fragment.app.Fragment;
 
 import org.jetbrains.annotations.NotNull;
 
-public class TaskFragmentDetail extends Fragment {
+public class TaskFragmentDetail extends Fragment {          //fragment pentru editarea unui Task
 
     public TaskFragmentDetail() {
         // Required empty public constructor
@@ -43,7 +43,7 @@ public class TaskFragmentDetail extends Fragment {
         View view = inflater.inflate(R.layout.fragment_task_detail, container, false);
         view.<EditText>findViewById(R.id.taskDetailEditTextName).setText(task.name);
         view.<EditText>findViewById(R.id.taskDetailEditTextDescription).setText(task.description);
-        view.findViewById(R.id.taskDetailSaveButton).setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.taskDetailSaveButton).setOnClickListener(new View.OnClickListener() {        //buton pentru salvarea Task-ului editat
             @Override
             public void onClick(View v) {
                 SQLiteDatabaseHelper db = new SQLiteDatabaseHelper(getContext());
@@ -61,7 +61,7 @@ public class TaskFragmentDetail extends Fragment {
             }
         });
 
-        view.findViewById(R.id.taskDetailDeleteButton).setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.taskDetailDeleteButton).setOnClickListener(new View.OnClickListener() {      //buton pentru stergerea Task-ului editat
             @Override
             public void onClick(View v) {
                 SQLiteDatabaseHelper db = new SQLiteDatabaseHelper(getContext());

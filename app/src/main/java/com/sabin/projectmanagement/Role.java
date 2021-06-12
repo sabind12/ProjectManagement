@@ -1,6 +1,6 @@
 package com.sabin.projectmanagement;
 
-public class Role {
+public class Role {             //clasa model pentru rolurile si drepturile utilizatorilor
     int id;
     String name;
     Boolean project_read;

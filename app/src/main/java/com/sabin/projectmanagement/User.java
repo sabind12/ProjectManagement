@@ -1,6 +1,6 @@
 package com.sabin.projectmanagement;
 
-public class User {
+public class User {             //clasa model pentru utilizator
     int id;
     String name;
     String email;

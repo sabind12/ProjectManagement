@@ -18,12 +18,7 @@ import android.widget.AdapterView;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link TaskListFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+                    //fragment pentru listele de Task-uri generat in ViewPager si contine RecyclerView cu Task-urile listei
 public class TaskListFragment extends Fragment implements TaskAdapter.itemClickListener, TaskAdapter.TaskRecyclerInterface {
 
     private TaskAdapter mTaskAdapter;
@@ -44,10 +39,10 @@ public class TaskListFragment extends Fragment implements TaskAdapter.itemClickL
     @Override
     public void onStart() {
         super.onStart();
-        taskArrayList = (ArrayList<Task>) getArguments().getSerializable("taskArray");
+        taskArrayList = (ArrayList<Task>) getArguments().getSerializable("taskArray");      //recuperarea listei de Task-uri din argumente
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         taskRecyclerView.setLayoutManager(layoutManager);
-        mTaskAdapter = new TaskAdapter( getContext(), taskArrayList, this, this);
+        mTaskAdapter = new TaskAdapter( getContext(), taskArrayList, this, this); //configurarea Adaptorului RecyclerView cu lista
         taskRecyclerView.setAdapter(mTaskAdapter);
     }
 

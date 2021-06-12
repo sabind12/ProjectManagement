@@ -3,7 +3,7 @@ package com.sabin.projectmanagement;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Project {
+public class Project {                  //Clasa model pentru proiect
     int id;
     String name;
     String description;

@@ -19,9 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder> {
-
+    //Adaptor pentru RecyclerView din fragmentul cu Task-urile unei liste
     private static final String TAG = "TaskAdapter";
-
     private final itemClickListener listener;
     TaskRecyclerInterface mTaskListener;
     private Context mContext;
@@ -41,14 +40,14 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
     @NonNull
     @NotNull
     @Override
-    public TaskViewHolder onCreateViewHolder(@NonNull @NotNull ViewGroup parent, int viewType) {
+    public TaskViewHolder onCreateViewHolder(@NonNull @NotNull ViewGroup parent, int viewType) {            //creerea View-urilor din lista
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_tasklistitem, parent, false);
         TaskViewHolder holder = new TaskViewHolder(view, mTaskListener);
         return holder;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull @NotNull TaskViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull @NotNull TaskViewHolder holder, int position) {       //definirea pozitiei View-urilor
         Log.d(TAG, "onBindBiewHolder:called.");
         Task task = tasks.get(position);
         holder.taskName.setText(task.getName());
@@ -59,7 +58,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         if (selectedTaskItem == position){
             holder.taskRootView.setBackgroundColor(mContext.getResources().getColor(R.color.teal_700));
         }
-        holder.parentTask_layout.setOnClickListener(new View.OnClickListener() {
+        holder.parentTask_layout.setOnClickListener(new View.OnClickListener() {        //setarea OnClickListener pentru selectarea/deselectarea unui obiect din lista
             @Override
             public void onClick(View v) {
                 int previousTaskItem = selectedTaskItem;
@@ -72,7 +71,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
                 //notifyItemRemoved(holder.getAbsoluteAdapterPosition());
             }
         });
-        holder.parentTask_layout.setOnLongClickListener(new View.OnLongClickListener() {
+        holder.parentTask_layout.setOnLongClickListener(new View.OnLongClickListener() {    //setarea listener apasare prelungita pentru deschiderea fragmentului de editare Task
             @Override
             public boolean onLongClick(View v) {
                 Log.d(TAG, "onClick: Clicked on: " + task.getName() + task);
@@ -84,7 +83,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
     }
 
     @Override
-    public int getItemCount() {
+    public int getItemCount() {                                 //setarea numarului de obiecte din RecyclerView
         if (tasks != null) {
             return tasks.size();
         }
@@ -93,9 +92,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         }
     }
 
-
-
-    public static class TaskViewHolder extends RecyclerView.ViewHolder{
+    public static class TaskViewHolder extends RecyclerView.ViewHolder{             //definirea clasei publica a holder-ului
 
        TextView taskName;
        TextView taskDescription;
@@ -114,7 +111,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
            parentTask_layout = itemView.findViewById(R.id.parentTask_layout);
        }
    }
-   public interface itemClickListener {
+   public interface itemClickListener {         //interfata pentru deschiderea fragmentului
         void onItemClick(Task task);
    }
 

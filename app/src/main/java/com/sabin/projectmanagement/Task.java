@@ -2,7 +2,7 @@ package com.sabin.projectmanagement;
 
 import java.io.Serializable;
 
-public class Task implements Serializable {
+public class Task implements Serializable {                 //Clasa model pentru Task
     int id;
     String name;
     String description;
