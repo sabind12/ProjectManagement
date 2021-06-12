@@ -53,8 +53,8 @@ public class TaskFragmentDetail extends Fragment {          //fragment pentru ed
                 saveTask.setId(task.getId());
                 saveTask.setList_id(task.getList_id());
                 db.editTask(saveTask);
-                ((MainActivity) getActivity()).refreshTaskLists(1);
-                ((MainActivity) getActivity()).taskListAdapter.createFragment(((MainActivity) getActivity()).listTabLayout.getSelectedTabPosition());
+                //((MainActivity) getActivity()).refreshTaskLists(1);
+                //((MainActivity) getActivity()).taskListAdapter.createFragment(((MainActivity) getActivity()).listTabLayout.getSelectedTabPosition());
 
 
                 getActivity().onBackPressed();
