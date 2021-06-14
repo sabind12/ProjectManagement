@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
+import java.util.Objects;
+
 public class TaskListDetailFragment extends Fragment {              //fragment pentru modificarea unei liste de Task-uri
 
     private static final String ARG_TaskListId = "taskListId";
@@ -54,7 +56,8 @@ public class TaskListDetailFragment extends Fragment {              //fragment p
                 taskList.setName(view.<EditText>findViewById(R.id.taskListDetailEditTextName).getText().toString());
                 taskList.setDescription(view.<EditText>findViewById(R.id.taskListDetailEditTextDescription).getText().toString());
                 db.editTaskList(taskList);
-                getActivity().onBackPressed();
+                requireActivity().onBackPressed();
+
             }
         });
         //buton pentru stergerea listei de Task-uri si a Task-urilor din lista
