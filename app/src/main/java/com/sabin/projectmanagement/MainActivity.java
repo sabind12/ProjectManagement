@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity {           //Activitatea pr
                 @RequiresApi(api = Build.VERSION_CODES.O)
                 @Override
                 public boolean onLongClick(View v) {
-                    Toast.makeText(MainActivity.this, "Tab clicked: " + currentChild.getTooltipText(), Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(MainActivity.this, "Tab clicked: " + currentChild.getTooltipText(), Toast.LENGTH_SHORT).show();
                     for (int j = 0; j < taskLists.size(); j++) {
                         String currentChildName = currentChild.getTooltipText().toString();
                         if (taskLists.get(j).getName().equals(currentChildName))
@@ -127,7 +127,6 @@ public class MainActivity extends AppCompatActivity {           //Activitatea pr
             }
         });
         findViewById(R.id.buttonMoveTaskRight).setOnClickListener(new View.OnClickListener() {      //buton pentru mutarea unui Task in lista de la dreapta
-            @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View v) {
                 if ((listTabLayout.getSelectedTabPosition() + 1) < (listTabStrip.getChildCount())){
@@ -166,18 +165,20 @@ public class MainActivity extends AppCompatActivity {           //Activitatea pr
     }
     private void initTasklist(){        //functie pentru popularea utilizator liste si Task-uri cu date de proba daca nu exista utilizatori
         SQLiteDatabaseHelper db = new SQLiteDatabaseHelper(this);
-        db.createTask(new Task("Task 1", "Desc 1", 1));
-        db.createTask(new Task("Task 2", "Desc 2", 2));
-        db.createTask(new Task("Task 3", "Desc 3", 3));
-        db.createTask(new Task("Task 4", "Desc 4", 4));
+        db.createTask(new Task("Task 1", "Description 1", 1));
+        db.createTask(new Task("Task 2", "Description 2", 2));
+        db.createTask(new Task("Task 3", "Description 3", 3));
+        db.createTask(new Task("Task 4", "Description 4", 4));
 
-        db.createTaskList(new TaskList("asdas1","asdqwe1","qweasd1", 1 ));
-        db.createTaskList(new TaskList("asdas2","asdqwe2","qweasd2", 1 ));
-        db.createTaskList(new TaskList("asdas3","asdqwe3","qweasd3", 1 ));
-        db.createTaskList(new TaskList("asdas4","asdqwe4","qweasd4", 1 ));
+        db.createTaskList(new TaskList("List 1","Task List Description 1","Icon Path 1", 1 ));
+        db.createTaskList(new TaskList("List 2","Task List Description 2","Icon Path 2", 1 ));
+        db.createTaskList(new TaskList("List 3","Task List Description 3","Icon Path 3", 1 ));
+        db.createTaskList(new TaskList("List 4","Task List Description 4","Icon Path 4", 1 ));
 
         User user = new User("qwe","qwe","qwe","admin");            //crearea unui utilizator admin
+        User admin = new User("admin","admin","admin","admin");
         db.createUser(user);
+        db.createUser(admin);
     }
     public void openTaskFragment (Task task){ //Functie pentru deschiderea unui fragment editabil de detaliu al taskului
         FragmentTransaction fragmentTransaction =  getSupportFragmentManager().beginTransaction();
@@ -189,7 +190,6 @@ public class MainActivity extends AppCompatActivity {           //Activitatea pr
         fragmentTransaction.replace(R.id.flFragmentTask, fragmentTaskDetail);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
-
     }
 
     public void openTaskListFragment (int taskListId){ //Functie pentru deschiderea unui fragment editabil de detaliu al taskului
@@ -199,7 +199,6 @@ public class MainActivity extends AppCompatActivity {           //Activitatea pr
         fragmentTransaction.replace(R.id.flFragmentTask, fragmentTaskListDetail);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
-
     }
 
     public void refreshTaskLists (int projectId){       //functie pentru recitirea listelor de Task-uri

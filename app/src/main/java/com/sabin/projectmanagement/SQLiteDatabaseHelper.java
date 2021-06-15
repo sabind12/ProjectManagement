@@ -15,8 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SQLiteDatabaseHelper extends SQLiteOpenHelper {            //clasa pentru citirea si scrierea in baza de date SQLite
-    public static final String LOG = "DBHelper"; //Tag pentru inregistrare loguri
-    public static final String DB_NAME = "project.db"; //Nume baza de date
+    public static final String LOG = "DBHelper";                    //Tag pentru inregistrare loguri
+    public static final String DB_NAME = "project.db";              //Nume baza de date
                                                                         //crearea variabilelor String pentru numele tabalelor si coloanelor din baza de date
     //Definire variabile nume tabel roluri utilizatori si nume coloane tabel roluri/drepturi utilizatori
     public static final String TABLE_ROLE = "role";

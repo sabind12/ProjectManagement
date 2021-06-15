@@ -38,11 +38,7 @@ public class TaskListAdapter extends FragmentStateAdapter {             //adapto
     @NotNull
     @Override
     public Fragment createFragment(int position) {                  //crearea unui fragment
-        //TaskFragment taskListFragment = new TaskFragment();
        TaskListFragment taskListFragment =  new TaskListFragment();
-       // SQLiteDatabaseHelper db = new SQLiteDatabaseHelper(taskListFragment.getContext());
-        //ArrayList<Task> listTaskArr;
-        //listTaskArr = (ArrayList<Task>) db.getListTasks(1);
         Bundle listTaskBundle = new Bundle();
         if (taskListsTasks.size() > position)                       //trimiterea datelor listei si a listei de Task-uri catre fragment prin argumente
         listTaskBundle.putSerializable("taskArray",taskListsTasks.get(position));
