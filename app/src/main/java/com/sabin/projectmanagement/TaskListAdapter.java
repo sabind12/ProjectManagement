@@ -7,6 +7,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Lifecycle;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
@@ -26,11 +27,11 @@ public class TaskListAdapter extends FragmentStateAdapter {             //adapto
         this.taskLists = taskLists;
     }
 
-    public void updateLists(ArrayList<ArrayList<Task>> taskListsTasks, ArrayList<TaskList> taskLists){
+    public void updateLists(ArrayList<ArrayList<Task>> tasks, ArrayList<TaskList> lists){
         this.taskListsTasks.clear();
         this.taskLists.clear();
-        this.taskListsTasks.addAll(taskListsTasks);
-        this.taskLists.addAll(taskLists);
+        this.taskListsTasks.addAll(tasks);
+        this.taskLists.addAll(lists);
         notifyDataSetChanged();
     }
 
@@ -47,6 +48,12 @@ public class TaskListAdapter extends FragmentStateAdapter {             //adapto
         taskListFragment.setArguments(listTaskBundle);
         return taskListFragment;
     }
+
+/*    public Fragment newFragment(){
+        FragmentTransaction fragmentTransaction =
+        TaskListFragment returnFragment = new TaskListFragment();
+        return returnFragment;
+    }*/
 
     @Override
     public int getItemCount() {         //setarea numarului de liste de Task-uri

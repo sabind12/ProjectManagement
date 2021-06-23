@@ -122,6 +122,18 @@ public class MainActivity extends AppCompatActivity {           //Activitatea pr
                 int newTaskId = (int)db.createTask(newTask);
 
                 openTaskFragment(db.getTask(newTaskId));
+
+           /*     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    getMainExecutor().execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            refreshTaskLists(1);
+                        }
+                    });
+                }*/
+                ArrayList<ArrayList<Task>> newTasks = db.getAllTaskListsTasks(1);
+                ArrayList<TaskList> lists = db.getAllTaskLists(1);
+                taskListAdapter.updateLists(newTasks, lists);
                 //String selectedTabName = listTabStrip.getChildAt(listTabLayout.getSelectedTabPosition()).getTooltipText().toString();
                 // int selectedListId = db.getTaskListIdByName(selectedTabName);
             }
